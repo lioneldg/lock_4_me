@@ -1,0 +1,11 @@
+[package]
+name = "bt_discover"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+btleplug = "0.11"
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+uuid = { version = "1.7", features = ["v4"] }
+async-stream = "0.3"
