@@ -29,7 +29,6 @@ async fn get_bt_events_listener(
     adapter: &Adapter,
 ) -> Result<impl Stream<Item = CentralEvent> + Send, Box<dyn Error>> {
     adapter.start_scan(ScanFilter::default()).await?;
-    println!("Scanning for Bluetooth LE devices (smartwatches, phones, etc.)...");
     let events = adapter.events().await?;
     Ok(events)
 }
