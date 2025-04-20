@@ -21,12 +21,21 @@ pub async fn listen_bluetooth(
     let mut initial_rssi = 0;
 
     loop {
-        let next_event = timeout(Duration::from_secs(15), device_stream.next())
-            .await
-            .map_err(|e| e.to_string())?;
+        let exit_loop = || {
+            app_handle
+                .emit("bluetooth-listener-closed", json!({}))
+                .unwrap();
+            return true;
+        };
+
+        let next_event = timeout(Duration::from_secs(15), device_stream.next()).await;
+
         let device = match next_event {
-            Some(device) => device,
-            _ => break,
+            Ok(Some(device)) => device,
+            Ok(None) | Err(_) => {
+                exit_loop();
+                break;
+            }
         };
 
         let rssi = match device.rssi {
@@ -58,7 +67,7 @@ pub async fn listen_bluetooth(
                 )
                 .unwrap();
         } else {
-            println!("Connection closed !!!!!!");
+            exit_loop();
             break;
         }
     }
