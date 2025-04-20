@@ -26,7 +26,6 @@ async function loadSettings(filePath: string) {
   return await invoke("read_settings", { file_path: filePath });
 }
 
-//@ts-ignore
 async function lockScreen() {
   await invoke("lock_screen");
 }
@@ -36,13 +35,15 @@ function App() {
 
   useEffect(() => {
     listen_bluetooth(TARGET_UUID, RSSI_DELTA_MAX);
-    const unlistenPromise = listen("bluetooth-event", (event) => {
-      addEvent(event.payload as DiscoveredDevice);
+    const unlistenBTEventPromise = listen("bluetooth-event", (event) =>
+      addEvent(event.payload as DiscoveredDevice)
+    );
+    const unlistenBTClosedPromise = listen("bluetooth-listener-closed", () => {
+      lockScreen();
     });
     return () => {
-      unlistenPromise.then((unlisten) => {
-        unlisten();
-      });
+      unlistenBTEventPromise.then((unlisten) => unlisten());
+      unlistenBTClosedPromise.then((unlisten) => unlisten());
     };
   }, []);
 
