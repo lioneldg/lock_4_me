@@ -1,9 +1,8 @@
 use bt_discover::*;
 use futures::stream::StreamExt;
 use serde_json::json;
-use std::sync::Arc;
+use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, State};
-use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 use tokio::time::{timeout, Duration};
 use uuid::Uuid;
@@ -14,12 +13,12 @@ pub struct BluetoothListenerHandle(pub Mutex<Option<JoinHandle<()>>>);
 #[tauri::command(rename_all = "snake_case")]
 pub async fn listen_bluetooth(
     app_handle: AppHandle,
-    state: State<'_, Arc<BluetoothListenerHandle>>,
+    state: State<'_, BluetoothListenerHandle>,
     target_uuid: Option<String>,
     rssi_delta_max: Option<i16>,
 ) -> Result<(), String> {
     // Stop previous listener if any
-    if let Some(handle) = state.0.lock().await.take() {
+    if let Some(handle) = state.0.lock().unwrap().take() {
         handle.abort();
     }
 
@@ -90,7 +89,7 @@ pub async fn listen_bluetooth(
     });
 
     // Store the new handle
-    *state.0.lock().await = Some(handle);
+    *state.0.lock().unwrap() = Some(handle);
 
     Ok(())
 }
