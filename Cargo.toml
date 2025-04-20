@@ -3,3 +3,4 @@ members = [
     "src-tauri",
     "crates/*"
 ] 
+resolver = "3"
