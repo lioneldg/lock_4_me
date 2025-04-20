@@ -1,3 +1,4 @@
+#[tauri::command]
 pub fn lock_screen() {
     #[cfg(target_os = "linux")]
     {
