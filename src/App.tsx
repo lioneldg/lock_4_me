@@ -5,6 +5,8 @@ import { appDataDir, join } from "@tauri-apps/api/path";
 import "./App.css";
 import { Settings, DiscoveredDevice } from "./types";
 import { useBluetoothStore } from "./store/bluetoothStore";
+import { BrowserRouter, Routes, Route, Link } from "react-router";
+
 const TARGET_UUID = "a87e3669-e2de-d0e3-52ce-93a023ceef37";
 const RSSI_DELTA_MAX = 15;
 
@@ -30,7 +32,7 @@ async function lockScreen() {
   await invoke("lock_screen");
 }
 
-function App() {
+function HomePage() {
   const { addEvent, events } = useBluetoothStore();
 
   useEffect(() => {
@@ -80,6 +82,30 @@ function App() {
         ))}
       </ul>
     </main>
+  );
+}
+
+function SettingsPage() {
+  return (
+    <main className="container">
+      <h2>Settings</h2>
+      <p>Settings page content goes here.</p>
+    </main>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <nav style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+        <Link to="/">Home</Link>
+        <Link to="/settings">Settings</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
