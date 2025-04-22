@@ -14,11 +14,18 @@ export interface DiscoveredDevice {
 export type Colors = {
   text: string;
   background: string;
-  link: string;
-  linkHover: string;
-  backgroundInput: string;
-  buttonHoverBorder: string;
-  buttonActiveBackground: string;
+  primary: string;
+  onPrimary: string;
+  secondary: string;
+  onSecondary: string;
+  error: string;
+  onError: string;
+  warning: string;
+  info: string;
+  success: string;
+  surface: string;
+  onSurface: string;
+  accentColor: string;
 };
 
 export type Theme = "light" | "dark";
