@@ -1,0 +1,21 @@
+.box {
+  width: 50px;
+  display: flex;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.switch {
+  display: inline-block;
+}
+
+.slider {
+  display: flex;
+  transform: translateX(0%);
+  transition: transform 0.3s ease;
+  border-radius: 4px;
+}
+
+.active .slider {
+  transform: translateX(100%);
+}

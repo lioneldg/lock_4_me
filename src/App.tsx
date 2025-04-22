@@ -2,7 +2,7 @@ import "./style.css";
 import { BrowserRouter, Routes, Route, Link } from "react-router";
 import HomeView from "./views/HomeView";
 import SettingsView from "./views/SettingsView";
-import { useTheme } from "./hocks/useTheme";
+import { ThemeProvider, useTheme } from "./hocks/ThemeContext";
 import { useEffect } from "react";
 
 function App() {
@@ -27,4 +27,10 @@ function App() {
   );
 }
 
-export default App;
+export default function AppWithProvider() {
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
+}
