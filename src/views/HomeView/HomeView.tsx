@@ -4,7 +4,6 @@ import { listen } from "@tauri-apps/api/event";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { Settings, DiscoveredDevice } from "../../types";
 import { useBluetoothStore } from "../../store/bluetoothStore";
-import styles from "./style.module.css";
 
 const TARGET_UUID = "a87e3669-e2de-d0e3-52ce-93a023ceef37";
 const RSSI_DELTA_MAX = 15;
@@ -71,7 +70,7 @@ const HomeView: React.FC = () => {
   }, []);
 
   return (
-    <main className={styles.container}>
+    <main>
       <h2>Bluetooth Events</h2>
       <ul>
         {Array.from(events.values()).map((event) => (

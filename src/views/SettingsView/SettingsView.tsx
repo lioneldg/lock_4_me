@@ -1,9 +1,8 @@
 import React from "react";
-import styles from "./style.module.css";
 
 const SettingsView: React.FC = () => {
   return (
-    <main className={styles.container}>
+    <main>
       <h2>Settings</h2>
       <p>Settings page content goes here.</p>
     </main>

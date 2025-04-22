@@ -10,3 +10,15 @@ export interface DiscoveredDevice {
   rssi: number;
   diff_rssi: number;
 }
+
+export type Colors = {
+  text: string;
+  background: string;
+  link: string;
+  linkHover: string;
+  backgroundInput: string;
+  buttonHoverBorder: string;
+  buttonActiveBackground: string;
+};
+
+export type Theme = "light" | "dark";
