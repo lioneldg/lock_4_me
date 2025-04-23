@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Dropdown from "../../components/Dropdown";
 import ThemeSwitch from "../../components/ThemeSwitch";
 import { useTranslation } from "react-i18next";
+import Slider from "../../components/Slider";
 
 const languageOptions = [
   { value: "en", label: "English" },
@@ -12,6 +13,7 @@ const SettingsView: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
   const [bluetoothDevice, setBluetoothDevice] = useState<string | null>(null);
+  const [rssiDeltaMax, setRssiDeltaMax] = useState<number>(15);
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
@@ -47,6 +49,18 @@ const SettingsView: React.FC = () => {
             {t("settings.selected")} {bluetoothDevice}
           </span>
         )}
+      </section>
+      <section style={{ marginTop: 16 }}>
+        <Slider
+          id="rssi-slider"
+          label={t("settings.rssi_sensitivity")}
+          value={rssiDeltaMax}
+          min={1}
+          max={60}
+          onChange={setRssiDeltaMax}
+          style={{ width: 200 }}
+          unit="dBm"
+        />
       </section>
     </main>
   );

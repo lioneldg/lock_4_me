@@ -7,7 +7,8 @@
     "title": "Paramètres",
     "language": "Langue",
     "select_bluetooth": "Sélectionner un appareil Bluetooth",
-    "selected": "Sélectionné :"
+    "selected": "Sélectionné :",
+    "rssi_sensitivity": "Sensibilité RSSI"
   },
   "nav": {
     "home": "Accueil",

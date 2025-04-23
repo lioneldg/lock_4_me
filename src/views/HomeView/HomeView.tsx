@@ -79,7 +79,8 @@ const HomeView: React.FC = () => {
       <ul>
         {Array.from(events.values()).map((event) => (
           <p key={event.id}>
-            {event.local_name} {"=>"} RSSI: {event.rssi}, Δ: {event.diff_rssi}
+            {event.local_name} {"=>"} RSSI: {event.rssi} dBm, Δ:{" "}
+            {event.diff_rssi} dBm
           </p>
         ))}
       </ul>
