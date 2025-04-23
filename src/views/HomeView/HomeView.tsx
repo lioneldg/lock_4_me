@@ -4,6 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { Settings, DiscoveredDevice } from "../../types";
 import { useBluetoothStore } from "../../store/bluetoothStore";
+import { useTranslation } from "react-i18next";
 
 const TARGET_UUID = "a87e3669-e2de-d0e3-52ce-93a023ceef37";
 const RSSI_DELTA_MAX = 15;
@@ -32,6 +33,7 @@ async function lockScreen() {
 
 const HomeView: React.FC = () => {
   const { addEvent, events } = useBluetoothStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     listen_bluetooth(TARGET_UUID, RSSI_DELTA_MAX);
@@ -71,6 +73,8 @@ const HomeView: React.FC = () => {
 
   return (
     <main>
+      <h1>{t("home.title")}</h1>
+      <p>{t("home.description")}</p>
       <h2>Bluetooth Events</h2>
       <ul>
         {Array.from(events.values()).map((event) => (

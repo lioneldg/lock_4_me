@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Dropdown from "../../components/Dropdown";
 import ThemeSwitch from "../../components/ThemeSwitch";
+import { useTranslation } from "react-i18next";
 
 const languageOptions = [
   { value: "en", label: "English" },
@@ -8,8 +9,14 @@ const languageOptions = [
 ];
 
 const SettingsView: React.FC = () => {
-  const [language, setLanguage] = useState("en");
+  const { t, i18n } = useTranslation();
+  const [language, setLanguage] = useState(i18n.language || "en");
   const [bluetoothDevice, setBluetoothDevice] = useState<string | null>(null);
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    i18n.changeLanguage(lang);
+  };
 
   const handleBluetoothSelect = () => {
     // TODO: Implement Bluetooth device selection logic
@@ -19,24 +26,26 @@ const SettingsView: React.FC = () => {
 
   return (
     <main>
-      <h2>Settings</h2>
+      <h2>{t("settings.title")}</h2>
       <section>
         <ThemeSwitch />
       </section>
       <section style={{ marginTop: 16 }}>
         <Dropdown
-          label="Language"
+          label={t("settings.language")}
           options={languageOptions}
           value={language}
-          onChange={setLanguage}
+          onChange={handleLanguageChange}
         />
       </section>
       <section style={{ marginTop: 16 }}>
         <button type="button" onClick={handleBluetoothSelect}>
-          Select Bluetooth device
+          {t("settings.select_bluetooth")}
         </button>
         {bluetoothDevice && (
-          <span style={{ marginLeft: 12 }}>Selected: {bluetoothDevice}</span>
+          <span style={{ marginLeft: 12 }}>
+            {t("settings.selected")} {bluetoothDevice}
+          </span>
         )}
       </section>
     </main>

@@ -1,0 +1,16 @@
+{
+  "home": {
+    "title": "Bienvenue sur Lock4Me",
+    "description": "Votre application de gestion de serrures sécurisée."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "select_bluetooth": "Sélectionner un appareil Bluetooth",
+    "selected": "Sélectionné :"
+  },
+  "nav": {
+    "home": "Accueil",
+    "settings": "Paramètres"
+  }
+}

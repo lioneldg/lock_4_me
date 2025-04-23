@@ -1,0 +1,16 @@
+{
+  "home": {
+    "title": "Welcome to Lock4Me",
+    "description": "Your secure lock management app."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "select_bluetooth": "Select Bluetooth device",
+    "selected": "Selected:"
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings"
+  }
+}
