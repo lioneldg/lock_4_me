@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./style.module.css";
-import { useTheme } from "../../hocks/ThemeContext";
+import { useTheme } from "../../hooks/ThemeContext";
 
 export interface DropdownOption {
   value: string;

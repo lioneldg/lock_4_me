@@ -1,6 +1,8 @@
 export type Settings = {
   target_uuid: string;
   rssi_delta_max: number;
+  theme: string;
+  language: string;
 };
 
 export interface DiscoveredDevice {

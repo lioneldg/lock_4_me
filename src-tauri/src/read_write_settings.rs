@@ -6,6 +6,8 @@ use std::path::Path;
 pub struct Settings {
     target_uuid: String,
     rssi_delta_max: i16,
+    theme: String,
+    language: String,
 }
 
 impl Settings {

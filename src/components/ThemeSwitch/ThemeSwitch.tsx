@@ -1,18 +1,20 @@
 import React from "react";
 import style from "./ThemeSwitch.module.css";
-import { useTheme } from "../../hocks/ThemeContext";
+import { useTheme } from "../../hooks/ThemeContext";
 import Icon, { ICON_TYPE } from "../Icon/Icon";
+import { useSettingsStore } from "../../store/settingsStore";
 
 const LIGHT = "light";
 const DARK = "dark";
 
 const ThemeSwitch: React.FC = () => {
   const { theme, setTheme, colors } = useTheme();
+  const { setSettings } = useSettingsStore();
 
   function switchTheme(): void {
     const newTheme = theme === LIGHT ? DARK : LIGHT;
     setTheme(newTheme);
-    // Optionally: persist preferences here
+    setSettings({ theme: newTheme });
   }
 
   const isLight = theme === LIGHT;

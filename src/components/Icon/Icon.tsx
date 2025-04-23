@@ -1,6 +1,6 @@
 import React from "react";
 import Ic from "@mdi/react";
-import { useTheme } from "../../hocks/ThemeContext";
+import { useTheme } from "../../hooks/ThemeContext";
 import {
   mdiArrowLeftRightBold,
   mdiArrowLeftBold,

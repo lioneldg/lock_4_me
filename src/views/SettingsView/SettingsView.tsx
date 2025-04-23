@@ -3,6 +3,8 @@ import Dropdown from "../../components/Dropdown";
 import ThemeSwitch from "../../components/ThemeSwitch";
 import { useTranslation } from "react-i18next";
 import Slider from "../../components/Slider";
+import { useSettingsStore } from "../../store/settingsStore";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const languageOptions = [
   { value: "en", label: "English" },
@@ -11,13 +13,20 @@ const languageOptions = [
 
 const SettingsView: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language || "en");
+  const { settings, setSettings } = useSettingsStore();
   const [bluetoothDevice, setBluetoothDevice] = useState<string | null>(null);
-  const [rssiDeltaMax, setRssiDeltaMax] = useState<number>(15);
+  const [localRssi, setLocalRssi] = useState(settings.rssi_delta_max);
+  const debouncedRssi = useDebounce(localRssi, 400);
+
+  React.useEffect(() => {
+    if (debouncedRssi !== settings.rssi_delta_max) {
+      setSettings({ rssi_delta_max: debouncedRssi });
+    }
+  }, [debouncedRssi]);
 
   const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
     i18n.changeLanguage(lang);
+    setSettings({ language: lang });
   };
 
   const handleBluetoothSelect = () => {
@@ -36,7 +45,7 @@ const SettingsView: React.FC = () => {
         <Dropdown
           label={t("settings.language")}
           options={languageOptions}
-          value={language}
+          value={settings.language}
           onChange={handleLanguageChange}
         />
       </section>
@@ -54,10 +63,10 @@ const SettingsView: React.FC = () => {
         <Slider
           id="rssi-slider"
           label={t("settings.rssi_sensitivity")}
-          value={rssiDeltaMax}
+          value={localRssi}
           min={1}
           max={60}
-          onChange={setRssiDeltaMax}
+          onChange={setLocalRssi}
           style={{ width: 200 }}
           unit="dBm"
         />
