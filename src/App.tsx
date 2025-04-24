@@ -6,19 +6,35 @@ import { ThemeProvider, useTheme } from "./hooks/ThemeContext";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "./store/settingsStore";
+import { useAppStore } from "./store/appStore";
 
 function App() {
   const { colors, setTheme } = useTheme();
   const { t, i18n } = useTranslation();
   const { settings, loadSettings } = useSettingsStore();
+  const { setIsLoading } = useAppStore();
 
   useEffect(() => {
-    document.body.style.background = colors.background;
-    document.body.style.color = colors.text;
+    document.documentElement.style.setProperty(
+      "background-color",
+      colors.background,
+      "important"
+    );
+    document.body.style.setProperty(
+      "background-color",
+      colors.background,
+      "important"
+    );
+    document
+      .getElementById("root")
+      ?.style.setProperty("background-color", colors.background, "important");
+
+    document.body.style.setProperty("color", colors.text, "important");
   }, [colors.background, colors.text]);
 
   useEffect(() => {
-    loadSettings();
+    setIsLoading(true);
+    loadSettings().finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {

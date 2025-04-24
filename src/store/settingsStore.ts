@@ -12,7 +12,7 @@ interface SettingsStore {
 const defaultSettings: Settings = {
   target_uuid: "a87e3669-e2de-d0e3-52ce-93a023ceef37",
   rssi_delta_max: 15,
-  theme: "light",
+  theme: "dark",
   language: "en",
 };
 
@@ -30,10 +30,10 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     const dir = await appDataDir();
     const filePath = await join(dir, "settings.json");
     try {
-      const loaded = await invoke<Settings>("read_settings", {
+      const _settings = await invoke<Settings>("read_settings", {
         file_path: filePath,
       });
-      set({ settings: loaded });
+      set({ settings: _settings });
     } catch (e) {
       // If not found, write default
       await invoke("write_settings", {
