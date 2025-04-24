@@ -10,6 +10,7 @@
     "selected": "Sélectionné :",
     "rssi_sensitivity": "Sensibilité RSSI"
   },
+  "loading": "Chargement…",
   "nav": {
     "home": "Accueil",
     "settings": "Paramètres"

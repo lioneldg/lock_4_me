@@ -10,6 +10,7 @@
     "selected": "Selected:",
     "rssi_sensitivity": "RSSI Sensitivity"
   },
+  "loading": "Loading...",
   "nav": {
     "home": "Home",
     "settings": "Settings"
