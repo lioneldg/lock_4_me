@@ -19,6 +19,10 @@ const SettingsView: React.FC = () => {
   const debouncedRssi = useDebounce(localRssi, 400);
 
   React.useEffect(() => {
+    setLocalRssi(settings.rssi_delta_max);
+  }, [settings.rssi_delta_max]);
+
+  React.useEffect(() => {
     if (debouncedRssi !== settings.rssi_delta_max) {
       setSettings({ rssi_delta_max: debouncedRssi });
     }
