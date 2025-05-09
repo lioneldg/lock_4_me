@@ -1,0 +1,12 @@
+# Configurations ignored by Knip
+node_modules
+dist
+target
+
+# Configuration files
+*.config.js
+*.config.ts
+vite.config.ts
+
+# Other files to ignore if needed
+# src/generated/**/* 
