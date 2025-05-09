@@ -34,7 +34,7 @@ const HomeView: React.FC = () => {
       unlistenBTEventPromise.then((unlisten) => unlisten());
       unlistenBTClosedPromise.then((unlisten) => unlisten());
     };
-  }, [settings.target_uuid, settings.rssi_delta_max]);
+  }, [settings.target_uuid, settings.rssi_delta_max, addEvent]);
 
   return (
     <main>

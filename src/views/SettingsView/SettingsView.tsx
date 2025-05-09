@@ -26,7 +26,7 @@ const SettingsView: React.FC = () => {
     if (debouncedRssi !== settings.rssi_delta_max) {
       setSettings({ rssi_delta_max: debouncedRssi });
     }
-  }, [debouncedRssi]);
+  }, [debouncedRssi, setSettings, settings.rssi_delta_max]);
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
