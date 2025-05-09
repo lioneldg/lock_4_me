@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import Dropdown from "../../components/Dropdown";
-import ThemeSwitch from "../../components/ThemeSwitch";
-import { useTranslation } from "react-i18next";
-import Slider from "../../components/Slider";
-import { useSettingsStore } from "../../store/settingsStore";
-import { useDebounce } from "../../hooks/useDebounce";
+import React, { useState } from 'react';
+import Dropdown from '../../components/Dropdown';
+import ThemeSwitch from '../../components/ThemeSwitch';
+import { useTranslation } from 'react-i18next';
+import Slider from '../../components/Slider';
+import { useSettingsStore } from '../../store/settingsStore';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const languageOptions = [
-  { value: "en", label: "English" },
-  { value: "fr", label: "Français" },
+  { value: 'en', label: 'English' },
+  { value: 'fr', label: 'Français' }
 ];
 
 const SettingsView: React.FC = () => {
@@ -36,18 +36,18 @@ const SettingsView: React.FC = () => {
   const handleBluetoothSelect = () => {
     // TODO: Implement Bluetooth device selection logic
     // setBluetoothDevice(selectedDevice);
-    alert("Bluetooth device selection not implemented yet.");
+    alert('Bluetooth device selection not implemented yet.');
   };
 
   return (
     <main>
-      <h2>{t("settings.title")}</h2>
+      <h2>{t('settings.title')}</h2>
       <section>
         <ThemeSwitch />
       </section>
       <section style={{ marginTop: 16 }}>
         <Dropdown
-          label={t("settings.language")}
+          label={t('settings.language')}
           options={languageOptions}
           value={settings.language}
           onChange={handleLanguageChange}
@@ -55,18 +55,18 @@ const SettingsView: React.FC = () => {
       </section>
       <section style={{ marginTop: 16 }}>
         <button type="button" onClick={handleBluetoothSelect}>
-          {t("settings.select_bluetooth")}
+          {t('settings.select_bluetooth')}
         </button>
         {bluetoothDevice && (
           <span style={{ marginLeft: 12 }}>
-            {t("settings.selected")} {bluetoothDevice}
+            {t('settings.selected')} {bluetoothDevice}
           </span>
         )}
       </section>
       <section style={{ marginTop: 16 }}>
         <Slider
           id="rssi-slider"
-          label={t("settings.rssi_sensitivity")}
+          label={t('settings.rssi_sensitivity')}
           value={localRssi}
           min={1}
           max={60}

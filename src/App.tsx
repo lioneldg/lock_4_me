@@ -1,12 +1,12 @@
-import "./style.css";
-import { BrowserRouter, Routes, Route, Link } from "react-router";
-import HomeView from "./views/HomeView";
-import SettingsView from "./views/SettingsView";
-import { ThemeProvider, useTheme } from "./hooks/ThemeContext";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { useSettingsStore } from "./store/settingsStore";
-import { useAppStore } from "./store/appStore";
+import './style.css';
+import { BrowserRouter, Routes, Route, Link } from 'react-router';
+import HomeView from './views/HomeView';
+import SettingsView from './views/SettingsView';
+import { ThemeProvider, useTheme } from './hooks/ThemeContext';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSettingsStore } from './store/settingsStore';
+import { useAppStore } from './store/appStore';
 
 function App() {
   const { colors, setTheme } = useTheme();
@@ -15,21 +15,13 @@ function App() {
   const { setIsLoading } = useAppStore();
 
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      "background-color",
-      colors.background,
-      "important"
-    );
-    document.body.style.setProperty(
-      "background-color",
-      colors.background,
-      "important"
-    );
+    document.documentElement.style.setProperty('background-color', colors.background, 'important');
+    document.body.style.setProperty('background-color', colors.background, 'important');
     document
-      .getElementById("root")
-      ?.style.setProperty("background-color", colors.background, "important");
+      .getElementById('root')
+      ?.style.setProperty('background-color', colors.background, 'important');
 
-    document.body.style.setProperty("color", colors.text, "important");
+    document.body.style.setProperty('color', colors.text, 'important');
   }, [colors.background, colors.text]);
 
   useEffect(() => {
@@ -39,7 +31,7 @@ function App() {
 
   useEffect(() => {
     if (settings.theme) {
-      setTheme(settings.theme as "light" | "dark");
+      setTheme(settings.theme as 'light' | 'dark');
     }
   }, [settings.theme, setTheme]);
 
@@ -51,9 +43,9 @@ function App() {
 
   return (
     <BrowserRouter>
-      <nav style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-        <Link to="/">{t("nav.home")}</Link>
-        <Link to="/settings">{t("nav.settings")}</Link>
+      <nav style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+        <Link to="/">{t('nav.home')}</Link>
+        <Link to="/settings">{t('nav.settings')}</Link>
       </nav>
       <Routes>
         <Route path="/" element={<HomeView />} />

@@ -35,7 +35,9 @@
   background: var(--slider-thumb-bg, #6366f1);
   border: 2px solid var(--slider-thumb-border, #e879f9);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: background 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    border 0.2s;
   cursor: pointer;
   box-sizing: border-box;
   margin-top: -7px; /* Center the thumb on a 4px track */
@@ -53,7 +55,9 @@
   background: var(--slider-thumb-bg, #6366f1);
   border: 2px solid var(--slider-thumb-border, #e879f9);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: background 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    border 0.2s;
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -70,7 +74,9 @@
   background: var(--slider-thumb-bg, #6366f1);
   border: 2px solid var(--slider-thumb-border, #e879f9);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: background 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    border 0.2s;
   cursor: pointer;
   box-sizing: border-box;
 }

@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { Settings } from "../types";
-import { invoke } from "@tauri-apps/api/core";
-import { appDataDir, join } from "@tauri-apps/api/path";
+import { create } from 'zustand';
+import { Settings } from '../types';
+import { invoke } from '@tauri-apps/api/core';
+import { appDataDir, join } from '@tauri-apps/api/path';
 
 interface SettingsStore {
   settings: Settings;
@@ -10,10 +10,10 @@ interface SettingsStore {
 }
 
 const defaultSettings: Settings = {
-  target_uuid: "a87e3669-e2de-d0e3-52ce-93a023ceef37",
+  target_uuid: 'a87e3669-e2de-d0e3-52ce-93a023ceef37',
   rssi_delta_max: 15,
-  theme: "dark",
-  language: "en",
+  theme: 'dark',
+  language: 'en'
 };
 
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
@@ -23,24 +23,24 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     set({ settings: updated });
     // Persists to disk
     const dir = await appDataDir();
-    const filePath = await join(dir, "settings.json");
-    await invoke("write_settings", { file_path: filePath, settings: updated });
+    const filePath = await join(dir, 'settings.json');
+    await invoke('write_settings', { file_path: filePath, settings: updated });
   },
   loadSettings: async () => {
     const dir = await appDataDir();
-    const filePath = await join(dir, "settings.json");
+    const filePath = await join(dir, 'settings.json');
     try {
-      const _settings = await invoke<Settings>("read_settings", {
-        file_path: filePath,
+      const _settings = await invoke<Settings>('read_settings', {
+        file_path: filePath
       });
       set({ settings: _settings });
-    } catch (e) {
+    } catch (_e) {
       // If not found, write default
-      await invoke("write_settings", {
+      await invoke('write_settings', {
         file_path: filePath,
-        settings: defaultSettings,
+        settings: defaultSettings
       });
       set({ settings: defaultSettings });
     }
-  },
+  }
 }));

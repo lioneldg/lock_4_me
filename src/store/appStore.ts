@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface AppStore {
   isLoading: boolean;
@@ -7,5 +7,5 @@ interface AppStore {
 
 export const useAppStore = create<AppStore>((set) => ({
   isLoading: false,
-  setIsLoading: (loading) => set({ isLoading: loading }),
+  setIsLoading: (loading) => set({ isLoading: loading })
 }));

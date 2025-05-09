@@ -1,6 +1,6 @@
-import React from "react";
-import { useTheme } from "../hooks/ThemeContext";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useTheme } from '../hooks/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const LoadingSpinner: React.FC = () => {
   const { colors } = useTheme();
@@ -10,15 +10,15 @@ const LoadingSpinner: React.FC = () => {
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
         background,
         color: textColor,
         fontSize: 32,
-        flexDirection: "column",
-        transition: "background 0.2s, color 0.2s",
+        flexDirection: 'column',
+        transition: 'background 0.2s, color 0.2s'
       }}
     >
       <div className="loader" style={{ marginBottom: 24 }}>
@@ -50,7 +50,7 @@ const LoadingSpinner: React.FC = () => {
           </circle>
         </svg>
       </div>
-      {t("loading")}
+      {t('loading')}
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import React from "react";
-import Ic from "@mdi/react";
-import { useTheme } from "../../hooks/ThemeContext";
+import React from 'react';
+import Ic from '@mdi/react';
+import { useTheme } from '../../hooks/ThemeContext';
 import {
   mdiArrowLeftRightBold,
   mdiArrowLeftBold,
@@ -29,8 +29,8 @@ import {
   mdiCheck,
   mdiLogout,
   mdiContentSaveEditOutline,
-  mdiLockOutline,
-} from "@mdi/js";
+  mdiLockOutline
+} from '@mdi/js';
 
 export const ICON_TYPE = {
   ARROW_LEFT_BOLD: mdiArrowLeftBold,
@@ -60,7 +60,7 @@ export const ICON_TYPE = {
   SEND: mdiSendOutline,
   SETTINGS: mdiCogs,
   UPLOAD_CLOUD: mdiCloudUploadOutline,
-  UPLOAD: mdiUpload,
+  UPLOAD: mdiUpload
 };
 
 export type IconType = (typeof ICON_TYPE)[keyof typeof ICON_TYPE];
@@ -89,7 +89,7 @@ const Icon: React.FC<propsInterface> = (props: propsInterface) => {
     flipVertical,
     rotate,
     spin,
-    style,
+    style
   } = props;
   return (
     <Ic

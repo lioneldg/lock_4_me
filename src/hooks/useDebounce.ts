@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 // Returns the debounced value after a delay
 export function useDebounce<T>(value: T, delay: number): T {

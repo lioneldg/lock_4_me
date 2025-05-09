@@ -1,6 +1,6 @@
-import React from "react";
-import styles from "./style.module.css";
-import { useTheme } from "../../hooks/ThemeContext";
+import React from 'react';
+import styles from './style.module.css';
+import { useTheme } from '../../hooks/ThemeContext';
 
 export interface DropdownOption {
   value: string;
@@ -14,12 +14,7 @@ interface DropdownProps {
   label?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
-  options,
-  value,
-  onChange,
-  label,
-}) => {
+const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, label }) => {
   const { colors } = useTheme();
 
   return (
@@ -36,7 +31,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         style={{
           background: colors.surface,
           color: colors.onSurface,
-          borderColor: colors.primary,
+          borderColor: colors.primary
         }}
       >
         {options.map((option) => (

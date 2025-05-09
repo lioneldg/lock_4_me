@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { DiscoveredDevice } from "../types";
+import { create } from 'zustand';
+import { DiscoveredDevice } from '../types';
 
 interface BluetoothStore {
   events: Map<string, DiscoveredDevice>;
@@ -15,5 +15,5 @@ export const useBluetoothStore = create<BluetoothStore>((set) => ({
       newMap.set(event.id, event);
       return { events: newMap };
     }),
-  clearEvents: () => set({ events: new Map() }),
+  clearEvents: () => set({ events: new Map() })
 }));

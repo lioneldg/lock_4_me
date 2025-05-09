@@ -1,5 +1,5 @@
-import React from "react";
-import styles from "./style.module.css";
+import React from 'react';
+import styles from './style.module.css';
 interface SliderProps {
   label: string;
   value: number;
@@ -21,12 +21,12 @@ const Slider: React.FC<SliderProps> = ({
   onChange,
   id,
   style,
-  unit,
+  unit
 }) => {
   return (
     <div className={styles.sliderContainer} style={style}>
       <label htmlFor={id} className={styles.label}>
-        {label}:{" "}
+        {label}:{' '}
         <span className={styles.value}>
           {value} {unit}
         </span>
