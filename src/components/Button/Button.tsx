@@ -68,10 +68,10 @@ const Button: React.FC<ButtonProps> = (props) => {
   }
 
   const propsStyle = {
-    width: width ? `${width}rem` : text ? '7rem' : '0.1rem',
+    width: width ? `${width}rem` : text ? 'fit-content' : '0.1rem',
     height: height ? `${height}rem` : text ? '2rem' : '1.5rem',
     backgroundColor: _backgroundColor,
-    border: `${noBorder || !text ? 0 : 1}px solid ${isDisabled ? colors.text : colors.accentColor}`,
+    border: `${noBorder || !text ? 0 : 1}px solid ${isDisabled ? colors.backgroundTextColor : colors.accentColor}`,
     padding: noPadding ? '0rem' : '',
     cursor: isDisabled ? 'default' : 'pointer',
     borderRadius: `${borderRadius}px`

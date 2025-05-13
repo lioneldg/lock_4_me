@@ -2,7 +2,7 @@ import { Colors } from '../types';
 
 const lightBackgroundColor = '#fff';
 const lightBackgroundTextColor = '#2e1d42';
-const lightSecondaryBackgroundColor = '#fff';
+const lightSecondaryBackgroundColor = '#ececec';
 const lightSecondaryBackgroundTextColor = '#999';
 const lightSecondaryBackgroundSelectorColor = '#e0e5e9';
 

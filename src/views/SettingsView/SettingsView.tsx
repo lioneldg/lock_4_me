@@ -63,7 +63,7 @@ const SettingsView: React.FC = () => {
         />
       </section>
       <section style={{ marginTop: 16 }}>
-        <Button width={10} text={t('settings.select_bluetooth')} onPress={handleBluetoothSelect} />
+        <Button noBorder text={t('settings.select_bluetooth')} onPress={handleBluetoothSelect} />
       </section>
       <section style={{ marginTop: 16 }}>
         <Slider
