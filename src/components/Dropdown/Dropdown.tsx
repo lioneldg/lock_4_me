@@ -19,7 +19,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, label }) 
   const { colors } = useTheme();
 
   return (
-    <div className={styles.dropdownContainer}>
+    <div>
       {label && (
         <label className={styles.label}>
           <FormattedText>{label}</FormattedText>
