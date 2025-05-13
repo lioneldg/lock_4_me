@@ -14,20 +14,26 @@ export interface DiscoveredDevice {
 }
 
 export type Colors = {
-  text: string;
-  background: string;
-  primary: string;
-  onPrimary: string;
-  secondary: string;
-  onSecondary: string;
-  error: string;
-  onError: string;
-  warning: string;
-  info: string;
-  success: string;
-  surface: string;
-  onSurface: string;
+  backgroundColor: string;
+  backgroundTextColor: string;
+  secondaryBackgroundColor: string;
+  secondaryBackgroundTextColor: string;
+  secondaryBackgroundSelectorColor: string;
   accentColor: string;
+  accentTextColor: string;
+  accentHoverColor: string;
+  brandColor: string;
+  brandHoverColor: string;
+  brandTextColor: string;
+  brandHoverTextColor: string;
+  selectorColor: string;
+  disabledColor: string;
+  separatorColor: string;
+  borderColor: string;
+  redColor: string;
+  buttonPrimaryColor: string;
+  buttonRedColor: string;
+  buttonGreyColor: string;
 };
 
 export type Theme = 'light' | 'dark';
