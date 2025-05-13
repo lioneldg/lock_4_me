@@ -1,5 +1,5 @@
 import './style.css';
-import { BrowserRouter, Routes, Route, Link } from 'react-router';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import HomeView from './views/HomeView';
 import SettingsView from './views/SettingsView';
 import { ThemeProvider, useTheme } from './hooks/ThemeContext';
@@ -10,19 +10,23 @@ import { useAppStore } from './store/appStore';
 
 function App() {
   const { colors, setTheme } = useTheme();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { settings, loadSettings } = useSettingsStore();
   const { setIsLoading } = useAppStore();
 
   useEffect(() => {
-    document.documentElement.style.setProperty('background-color', colors.background, 'important');
-    document.body.style.setProperty('background-color', colors.background, 'important');
+    document.documentElement.style.setProperty(
+      'background-color',
+      colors.backgroundColor,
+      'important'
+    );
+    document.body.style.setProperty('background-color', colors.backgroundColor, 'important');
     document
       .getElementById('root')
-      ?.style.setProperty('background-color', colors.background, 'important');
+      ?.style.setProperty('background-color', colors.backgroundColor, 'important');
 
-    document.body.style.setProperty('color', colors.text, 'important');
-  }, [colors.background, colors.text]);
+    document.body.style.setProperty('color', colors.backgroundColor, 'important');
+  }, [colors.backgroundColor]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -44,10 +48,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <nav style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-        <Link to="/">{t('nav.home')}</Link>
-        <Link to="/settings">{t('nav.settings')}</Link>
-      </nav>
       <Routes>
         <Route path="/" element={<HomeView />} />
         <Route path="/settings" element={<SettingsView />} />
