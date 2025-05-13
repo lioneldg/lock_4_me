@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './style.module.css';
+import FormattedText from '../FormattedText';
 interface SliderProps {
   label: string;
   value: number;
@@ -26,9 +27,11 @@ const Slider: React.FC<SliderProps> = ({
   return (
     <div className={styles.sliderContainer} style={style}>
       <label htmlFor={id} className={styles.label}>
-        {label}:{' '}
+        <FormattedText>{label} : </FormattedText>
         <span className={styles.value}>
-          {value} {unit}
+          <FormattedText>
+            {value} {unit}
+          </FormattedText>
         </span>
       </label>
       <input
