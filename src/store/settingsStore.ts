@@ -10,7 +10,7 @@ interface SettingsStore {
 }
 
 const defaultSettings: Settings = {
-  target_uuid: 'a87e3669-e2de-d0e3-52ce-93a023ceef37',
+  target_uuid: '',
   rssi_delta_max: 15,
   theme: 'dark',
   language: 'en'
