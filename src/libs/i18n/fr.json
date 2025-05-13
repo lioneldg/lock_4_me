@@ -1,7 +1,8 @@
 {
   "home": {
     "title": "Bienvenue sur Lock4Me",
-    "description": "Votre application de gestion de serrures sécurisée."
+    "discoveryMode": "Mode découverte : Affichage de tous les appareils Bluetooth",
+    "targetMode": "Mode cible : Surveillance de l'appareil {{uuid}}"
   },
   "settings": {
     "title": "Paramètres",
@@ -10,9 +11,5 @@
     "selected": "Sélectionné :",
     "rssi_sensitivity": "Sensibilité RSSI"
   },
-  "loading": "Chargement…",
-  "nav": {
-    "home": "Accueil",
-    "settings": "Paramètres"
-  }
+  "loading": "Chargement…"
 }

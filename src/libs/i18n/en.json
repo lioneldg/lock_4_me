@@ -1,7 +1,8 @@
 {
   "home": {
     "title": "Welcome to Lock4Me",
-    "description": "Your secure lock management app."
+    "discoveryMode": "Discovery Mode: Showing all Bluetooth devices",
+    "targetMode": "Target Mode: Monitoring device {{uuid}}"
   },
   "settings": {
     "title": "Settings",
@@ -10,9 +11,5 @@
     "selected": "Selected:",
     "rssi_sensitivity": "RSSI Sensitivity"
   },
-  "loading": "Loading...",
-  "nav": {
-    "home": "Home",
-    "settings": "Settings"
-  }
+  "loading": "Loading..."
 }
