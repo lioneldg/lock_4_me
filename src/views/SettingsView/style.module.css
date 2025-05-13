@@ -1,28 +1,25 @@
 .back_to_main {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  left: 1rem;
 }
 
 .header {
   display: flex;
   height: 3rem;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
+  justify-content: center;
   margin-bottom: 4rem;
 }
 
 .main {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
 
 section {
   display: flex;
   flex-direction: column;
-  width: 30rem;
   gap: 2rem;
 }
 

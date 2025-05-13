@@ -86,7 +86,9 @@ const SettingsView: React.FC = () => {
   return (
     <>
       <header className={styles.header}>
-        <BackToMain />
+        <div className={styles.back_to_main}>
+          <BackToMain />
+        </div>
         {title}
       </header>
       <main className={styles.main}>
