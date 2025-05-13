@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './style.module.css';
 import { useTheme } from '../../hooks/ThemeContext';
+import FormattedText from '../FormattedText';
 
 export interface DropdownOption {
   value: string;
@@ -20,8 +21,8 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, label }) 
   return (
     <div className={styles.dropdownContainer}>
       {label && (
-        <label className={styles.label} style={{ color: colors.text }}>
-          {label}
+        <label className={styles.label}>
+          <FormattedText>{label}</FormattedText>
         </label>
       )}
       <select
@@ -29,9 +30,9 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, label }) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
-          background: colors.surface,
-          color: colors.onSurface,
-          borderColor: colors.primary
+          background: colors.backgroundColor,
+          color: colors.backgroundTextColor,
+          borderColor: colors.borderColor
         }}
       >
         {options.map((option) => (
