@@ -10,7 +10,7 @@ interface FormattedTextProps {
 const FormattedText: React.FC<FormattedTextProps> = ({ children, style }) => {
   const { colors } = useTheme();
   return (
-    <div className={styleLocal.container} style={{ color: colors.backgroundTextColor, ...style }}>
+    <div className={styleLocal.container} style={{ color: colors.accentColor, ...style }}>
       {children}
     </div>
   );
