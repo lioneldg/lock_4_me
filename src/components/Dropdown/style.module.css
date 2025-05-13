@@ -1,6 +1,4 @@
 .dropdownContainer {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
 }
 
@@ -10,12 +8,9 @@
 }
 
 .select {
-  padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid;
   font-size: 16px;
-  transition: border 0.2s;
-  background: inherit;
 }
 
 .select:focus {
