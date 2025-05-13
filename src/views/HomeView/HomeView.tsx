@@ -1,5 +1,5 @@
 import styles from './style.module.css';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { DiscoveredDevice } from '../../types';
@@ -29,6 +29,7 @@ const HomeView: React.FC = () => {
   const { settings, setSettings } = useSettingsStore();
   const { isDiscoveryMode, setIsDiscoveryMode } = useAppStore();
   const navigate = useNavigate();
+  const [hoveredDevice, setHoveredDevice] = useState<string | null>(null);
   const homeTitleText = t('home.title');
   const discoveryModeText = t('home.discoveryMode');
   const targetModeText = t('home.targetMode', { uuid: settings.target_uuid });
@@ -95,7 +96,17 @@ const HomeView: React.FC = () => {
             key={discoveredDevice.id}
             onClick={() => selectDevice(discoveredDevice)}
             className="button"
-            style={isDiscoveryMode ? { cursor: 'pointer' } : {}}
+            onMouseEnter={() => setHoveredDevice(discoveredDevice.id)}
+            onMouseLeave={() => setHoveredDevice(null)}
+            style={
+              isDiscoveryMode
+                ? {
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease',
+                    transform: hoveredDevice === discoveredDevice.id ? 'scale(1.1)' : 'scale(1)'
+                  }
+                : {}
+            }
           >
             <FormattedText>
               {discoveredDevice.local_name} {'=>'} RSSI: {discoveredDevice.rssi} dBm
