@@ -19,7 +19,7 @@ const languageOptions = [
 const SettingsView: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { settings, setSettings } = useSettingsStore();
-  const { setIsDiscoveryMode } = useAppStore();
+  const { setIsDiscoveryMode, isDiscoveryMode } = useAppStore();
   const navigate = useNavigate();
   const [localRssi, setLocalRssi] = useState(settings.rssi_delta_max);
   const debouncedRssi = useDebounce(localRssi, 400);
@@ -67,7 +67,13 @@ const SettingsView: React.FC = () => {
   );
 
   const chooseBluetoothDeviceButton = (
-    <Button noBorder height={1.6} text={selectBluetoothText} onPress={handleBluetoothSelect} />
+    <Button
+      isDisabled={isDiscoveryMode}
+      noBorder
+      height={1.6}
+      text={selectBluetoothText}
+      onPress={handleBluetoothSelect}
+    />
   );
 
   const rssiSlider = (
