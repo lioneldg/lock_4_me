@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.icon {
+  flex: 1;
+}
+
+.text {
+  display: flex;
+  justify-content: center;
+  flex: 3;
+}
