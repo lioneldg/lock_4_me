@@ -23,6 +23,10 @@ const SettingsView: React.FC = () => {
   const navigate = useNavigate();
   const [localRssi, setLocalRssi] = useState(settings.rssi_delta_max);
   const debouncedRssi = useDebounce(localRssi, 400);
+  const settingsTitleText = t('settings.title');
+  const languageText = t('settings.language');
+  const selectBluetoothText = t('settings.select_bluetooth');
+  const rssiSensitivityText = t('settings.rssi_sensitivity');
 
   React.useEffect(() => {
     setLocalRssi(settings.rssi_delta_max);
@@ -49,26 +53,26 @@ const SettingsView: React.FC = () => {
     <main>
       <BackToMain />
       <FormattedText style={{ fontSize: 24, fontWeight: 'bold' }}>
-        {t('settings.title')}
+        {settingsTitleText}
       </FormattedText>
       <section>
         <ThemeSwitch />
       </section>
       <section style={{ marginTop: 16 }}>
         <Dropdown
-          label={t('settings.language')}
+          label={languageText}
           options={languageOptions}
           value={settings.language}
           onChange={handleLanguageChange}
         />
       </section>
       <section style={{ marginTop: 16 }}>
-        <Button noBorder text={t('settings.select_bluetooth')} onPress={handleBluetoothSelect} />
+        <Button noBorder text={selectBluetoothText} onPress={handleBluetoothSelect} />
       </section>
       <section style={{ marginTop: 16 }}>
         <Slider
           id="rssi-slider"
-          label={t('settings.rssi_sensitivity')}
+          label={rssiSensitivityText}
           value={localRssi ?? 0}
           min={1}
           max={60}

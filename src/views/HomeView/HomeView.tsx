@@ -29,6 +29,9 @@ const HomeView: React.FC = () => {
   const { settings, setSettings } = useSettingsStore();
   const { isDiscoveryMode, setIsDiscoveryMode } = useAppStore();
   const navigate = useNavigate();
+  const homeTitleText = t('home.title');
+  const discoveryModeText = t('home.discoveryMode');
+  const targetModeText = t('home.targetMode', { uuid: settings.target_uuid });
 
   const { target_uuid, rssi_delta_max } = useMemo(
     () => ({
@@ -74,17 +77,13 @@ const HomeView: React.FC = () => {
 
   const title = (
     <div className={styles.title}>
-      <FormattedText style={{ fontSize: 24, fontWeight: 'bold' }}>{t('home.title')}</FormattedText>
+      <FormattedText style={{ fontSize: 24, fontWeight: 'bold' }}>{homeTitleText}</FormattedText>
     </div>
   );
 
   const modeInfo = (
     <div className={styles.more_info}>
-      <FormattedText>
-        {isDiscoveryMode
-          ? t('home.discoveryMode')
-          : t('home.targetMode', { uuid: settings.target_uuid })}
-      </FormattedText>
+      <FormattedText>{isDiscoveryMode ? discoveryModeText : targetModeText}</FormattedText>
     </div>
   );
 
