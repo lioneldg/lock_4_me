@@ -68,8 +68,8 @@ pub async fn listen_bluetooth(
             let diff_rssi = rssi - initial_rssi.unwrap();
             if rssi_delta_max.map_or(true, |delta_max| delta_max + diff_rssi > 0) {
                 let event_type = device.event_type;
-                let local_name = device.local_name.unwrap_or_else(|| "Unknown".to_string());
                 let id = device.id;
+                let local_name = device.local_name.unwrap_or_else(|| id.clone());
 
                 let _ = app_handle_clone.emit(
                     "bluetooth-event",
