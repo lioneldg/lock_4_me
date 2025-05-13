@@ -7,12 +7,21 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from './store/settingsStore';
 import { useAppStore } from './store/appStore';
+import LoadingSpinner from './components/LoadingSpinner';
+import { useBluetoothStore } from './store/bluetoothStore';
 
 function App() {
   const { colors, setTheme } = useTheme();
   const { i18n } = useTranslation();
   const { settings, loadSettings } = useSettingsStore();
-  const { setIsLoading } = useAppStore();
+  const { setIsLoading, isLoading } = useAppStore();
+  const { events } = useBluetoothStore();
+
+  if (events.size == 0 && !isLoading) {
+    setIsLoading(true);
+  } else if (events.size > 0 && isLoading) {
+    setIsLoading(false);
+  }
 
   useEffect(() => {
     document.documentElement.style.setProperty(
@@ -52,6 +61,11 @@ function App() {
         <Route path="/" element={<HomeView />} />
         <Route path="/settings" element={<SettingsView />} />
       </Routes>
+      {isLoading && (
+        <div className="loading-spinner">
+          <LoadingSpinner />
+        </div>
+      )}
     </BrowserRouter>
   );
 }
