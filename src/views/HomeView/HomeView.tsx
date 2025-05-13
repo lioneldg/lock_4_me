@@ -58,7 +58,6 @@ const HomeView: React.FC = () => {
       clearEvents();
       setSettings({ target_uuid: device.id });
       setIsDiscoveryMode(false);
-      navigate('/settings');
     }
   }
 
