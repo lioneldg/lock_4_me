@@ -22,12 +22,10 @@
   justify-content: left;
   align-items: center;
   padding: 1rem;
-  background-color: #d74e4e;
 }
 
 .device_list {
   display: flex;
   justify-content: left;
   align-items: center;
-  background-color: #3c1111;
 }
