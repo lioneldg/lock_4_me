@@ -5,6 +5,11 @@ import { useTranslation } from 'react-i18next';
 import Slider from '../../components/Slider';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useDebounce } from '../../hooks/useDebounce';
+import { Button } from '../../components/Button';
+import BackToMain from '../../components/Button/BackToMain';
+import FormattedText from '../../components/FormattedText';
+import { useAppStore } from '../../store/appStore';
+import { useNavigate } from 'react-router';
 
 const languageOptions = [
   { value: 'en', label: 'English' },
@@ -14,7 +19,8 @@ const languageOptions = [
 const SettingsView: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { settings, setSettings } = useSettingsStore();
-  const [bluetoothDevice, setBluetoothDevice] = useState<string | null>(null);
+  const { setIsDiscoveryMode } = useAppStore();
+  const navigate = useNavigate();
   const [localRssi, setLocalRssi] = useState(settings.rssi_delta_max);
   const debouncedRssi = useDebounce(localRssi, 400);
 
@@ -34,14 +40,17 @@ const SettingsView: React.FC = () => {
   };
 
   const handleBluetoothSelect = () => {
-    // TODO: Implement Bluetooth device selection logic
-    // setBluetoothDevice(selectedDevice);
-    alert('Bluetooth device selection not implemented yet.');
+    setIsDiscoveryMode(true);
+    setSettings({ target_uuid: '' });
+    navigate('/');
   };
 
   return (
     <main>
-      <h2>{t('settings.title')}</h2>
+      <BackToMain />
+      <FormattedText style={{ fontSize: 24, fontWeight: 'bold' }}>
+        {t('settings.title')}
+      </FormattedText>
       <section>
         <ThemeSwitch />
       </section>
@@ -54,20 +63,13 @@ const SettingsView: React.FC = () => {
         />
       </section>
       <section style={{ marginTop: 16 }}>
-        <button type="button" onClick={handleBluetoothSelect}>
-          {t('settings.select_bluetooth')}
-        </button>
-        {bluetoothDevice && (
-          <span style={{ marginLeft: 12 }}>
-            {t('settings.selected')} {bluetoothDevice}
-          </span>
-        )}
+        <Button width={10} text={t('settings.select_bluetooth')} onPress={handleBluetoothSelect} />
       </section>
       <section style={{ marginTop: 16 }}>
         <Slider
           id="rssi-slider"
           label={t('settings.rssi_sensitivity')}
-          value={localRssi}
+          value={localRssi ?? 0}
           min={1}
           max={60}
           onChange={setLocalRssi}
