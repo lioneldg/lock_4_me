@@ -1,12 +1,12 @@
 use bt_discover::*;
 use futures::stream::StreamExt;
+use log::error;
 use serde_json::json;
 use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, State};
 use tokio::task::JoinHandle;
 use tokio::time::{timeout, Duration};
 use uuid::Uuid;
-
 // This is a wrapper around a Mutex to allow for the Bluetooth listener to be stopped
 pub struct BluetoothListenerHandle(pub Mutex<Option<JoinHandle<()>>>);
 
@@ -33,13 +33,19 @@ pub async fn listen_bluetooth(
 
     // Spawn the new listener task
     let handle = tokio::spawn(async move {
-        let exit_loop = |e: Option<String>| {
-            let _ = app_handle_clone.emit("bluetooth-listener-closed", json!({ "error": e }));
+        let refresh_time_out = || {
+            let _ = app_handle_clone.emit("bluetooth-refresh-timeout", {});
+        };
+        let over_delta_rssi = |diff_rssi: i16| {
+            let _ = app_handle_clone.emit(
+                "bluetooth-over-delta-rssi",
+                json!({ "diff_rssi": diff_rssi }),
+            );
         };
         let mut device_stream = match discover_bluetooth_devices(target_uuid).await {
             Ok(stream) => stream,
             Err(e) => {
-                exit_loop(Some(e.to_string()));
+                error!("Error discovering bluetooth devices: {}", e);
                 return;
             }
         };
@@ -51,8 +57,8 @@ pub async fn listen_bluetooth(
             let device = match next_event {
                 Ok(Some(device)) => device,
                 Ok(None) | Err(_) => {
-                    exit_loop(None);
-                    break;
+                    refresh_time_out();
+                    continue;
                 }
             };
 
@@ -82,8 +88,7 @@ pub async fn listen_bluetooth(
                     }),
                 );
             } else {
-                exit_loop(None);
-                break;
+                over_delta_rssi(diff_rssi);
             }
         }
     });

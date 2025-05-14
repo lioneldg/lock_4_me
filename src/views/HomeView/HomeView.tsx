@@ -48,12 +48,16 @@ const HomeView: React.FC = () => {
     const unlistenBTEventPromise = listen('bluetooth-event', (event) =>
       addEvent(event.payload as DiscoveredDevice)
     );
-    const unlistenBTClosedPromise = listen('bluetooth-listener-closed', () => {
+    const unlistenBTRefreshTimeoutPromise = listen('bluetooth-refresh-timeout', () => {
+      lockScreen();
+    });
+    const unlistenBTOverDeltaRSSIPromise = listen('bluetooth-over-delta-rssi', (_) => {
       lockScreen();
     });
     return () => {
       unlistenBTEventPromise.then((unlisten) => unlisten());
-      unlistenBTClosedPromise.then((unlisten) => unlisten());
+      unlistenBTRefreshTimeoutPromise.then((unlisten) => unlisten());
+      unlistenBTOverDeltaRSSIPromise.then((unlisten) => unlisten());
     };
   }, [target_uuid, rssi_delta_max, addEvent]);
 
