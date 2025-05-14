@@ -17,11 +17,13 @@ function App() {
   const { setIsLoading, isLoading } = useAppStore();
   const { events } = useBluetoothStore();
 
-  if (events.size == 0 && !isLoading) {
-    setIsLoading(true);
-  } else if (events.size > 0 && isLoading) {
-    setIsLoading(false);
-  }
+  useEffect(() => {
+    if (events.size === 0 && !isLoading) {
+      setIsLoading(true);
+    } else if (events.size > 0 && isLoading) {
+      setIsLoading(false);
+    }
+  }, [events.size, isLoading, setIsLoading]);
 
   useEffect(() => {
     document.documentElement.style.setProperty(
