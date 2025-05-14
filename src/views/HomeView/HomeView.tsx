@@ -1,7 +1,5 @@
 import styles from './style.module.css';
-import React, { useEffect, useMemo, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import React, { useState } from 'react';
 import { DiscoveredDevice } from '../../types';
 import { useBluetoothStore } from '../../store/bluetoothStore';
 import { useTranslation } from 'react-i18next';
@@ -12,19 +10,8 @@ import { useNavigate } from 'react-router';
 import FormattedText from '../../components/FormattedText';
 import { useAppStore } from '../../store/appStore';
 
-async function listen_bluetooth(targetUuid?: string, rssiDeltaMax?: number) {
-  await invoke('listen_bluetooth', {
-    target_uuid: targetUuid,
-    rssi_delta_max: rssiDeltaMax
-  });
-}
-
-async function lockScreen() {
-  await invoke('lock_screen');
-}
-
 const HomeView: React.FC = () => {
-  const { addEvent, events, clearEvents } = useBluetoothStore();
+  const { events, clearEvents } = useBluetoothStore();
   const { t } = useTranslation();
   const { settings, setSettings } = useSettingsStore();
   const { isDiscoveryMode, setIsDiscoveryMode } = useAppStore();
@@ -33,33 +20,6 @@ const HomeView: React.FC = () => {
   const homeTitleText = t('home.title');
   const discoveryModeText = t('home.discoveryMode');
   const targetModeText = t('home.targetMode', { uuid: settings.target_uuid });
-
-  const { target_uuid, rssi_delta_max } = useMemo(
-    () => ({
-      target_uuid: settings.target_uuid || undefined,
-      rssi_delta_max: settings.target_uuid ? settings.rssi_delta_max : undefined
-    }),
-    [settings.target_uuid, settings.rssi_delta_max]
-  );
-
-  useEffect(() => {
-    listen_bluetooth(target_uuid, rssi_delta_max);
-
-    const unlistenBTEventPromise = listen('bluetooth-event', (event) =>
-      addEvent(event.payload as DiscoveredDevice)
-    );
-    const unlistenBTRefreshTimeoutPromise = listen('bluetooth-refresh-timeout', () => {
-      lockScreen();
-    });
-    const unlistenBTOverDeltaRSSIPromise = listen('bluetooth-over-delta-rssi', (_) => {
-      lockScreen();
-    });
-    return () => {
-      unlistenBTEventPromise.then((unlisten) => unlisten());
-      unlistenBTRefreshTimeoutPromise.then((unlisten) => unlisten());
-      unlistenBTOverDeltaRSSIPromise.then((unlisten) => unlisten());
-    };
-  }, [target_uuid, rssi_delta_max, addEvent]);
 
   function selectDevice(device: DiscoveredDevice) {
     if (isDiscoveryMode) {
