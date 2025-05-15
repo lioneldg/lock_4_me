@@ -28,6 +28,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .manage(BluetoothListenerHandle(Mutex::new(None)))
         .setup(|app| {
+            #[cfg(target_os = "macos")]
+            app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
             let main_window = app.get_webview_window("main").unwrap();
             let window_ref = main_window.clone();
 
@@ -48,7 +51,9 @@ pub fn run() {
                             let window = app_handle.get_webview_window("main").unwrap();
                             if window.is_visible().unwrap() {
                                 window.hide().unwrap();
+                                window.set_skip_taskbar(true).unwrap();
                             } else {
+                                window.set_skip_taskbar(false).unwrap();
                                 window.show().unwrap();
                                 window.set_focus().unwrap();
                             }
