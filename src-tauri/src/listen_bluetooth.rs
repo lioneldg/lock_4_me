@@ -71,7 +71,7 @@ pub async fn listen_bluetooth(
 
             // Inner loop to process the current stream
             loop {
-                let next_event = timeout(Duration::from_secs(15), device_stream.next()).await;
+                let next_event = timeout(Duration::from_secs(10), device_stream.next()).await;
 
                 match next_event {
                     Ok(Some(device)) => {
