@@ -30,7 +30,6 @@ pub fn run() {
         .setup(|app| {
             #[cfg(target_os = "macos")]
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
-
             let main_window = app.get_webview_window("main").unwrap();
             let window_ref = main_window.clone();
 
@@ -43,7 +42,6 @@ pub fn run() {
 
             TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
-                .icon_as_template(true)
                 .on_tray_icon_event(|tray, event| {
                     if let TrayIconEvent::Click { button_state, .. } = event {
                         if button_state == MouseButtonState::Up {
