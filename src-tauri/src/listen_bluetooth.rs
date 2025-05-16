@@ -2,6 +2,7 @@ use bt_discover::*;
 use futures::stream::StreamExt;
 use futures::Stream;
 use log::error;
+use log::info;
 use serde_json::json;
 use std::pin::Pin;
 use std::sync::Mutex;
@@ -45,9 +46,11 @@ pub async fn listen_bluetooth(
     // Spawn the new listener task
     let handle = tokio::spawn(async move {
         let refresh_time_out = || {
+            info!("Refresh time out");
             let _ = app_handle_clone.emit("bluetooth-refresh-timeout", {});
         };
         let over_delta_rssi = |diff_rssi: i16| {
+            info!("Over delta rssi: {}", diff_rssi);
             let _ = app_handle_clone.emit(
                 "bluetooth-over-delta-rssi",
                 json!({ "diff_rssi": diff_rssi }),
@@ -71,7 +74,7 @@ pub async fn listen_bluetooth(
 
             // Inner loop to process the current stream
             loop {
-                let next_event = timeout(Duration::from_secs(10), device_stream.next()).await;
+                let next_event = timeout(Duration::from_secs(15), device_stream.next()).await;
 
                 match next_event {
                     Ok(Some(device)) => {
