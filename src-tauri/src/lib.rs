@@ -1,6 +1,7 @@
 use listen_bluetooth::BluetoothListenerHandle;
 use std::sync::Mutex;
 use tauri::{
+    menu::{Menu, MenuItem},
     tray::{MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Builder, Manager, WindowEvent,
 };
@@ -40,6 +41,9 @@ pub fn run() {
                 }
             });
 
+            let stop_i = MenuItem::with_id(app, "stop", "Stop", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&stop_i])?;
+
             TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
                 .on_tray_icon_event(|tray, event| {
@@ -58,6 +62,14 @@ pub fn run() {
                         }
                     }
                 })
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "stop" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                .menu(&menu)
+                .show_menu_on_left_click(false)
                 .build(app)
                 .expect("failed to create tray icon");
             Ok(())
