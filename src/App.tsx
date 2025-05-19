@@ -39,17 +39,9 @@ function App() {
   }, [events.size, isLoading, setIsLoading]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      'background-color',
-      colors.backgroundColor,
-      'important'
-    );
-    document.body.style.setProperty('background-color', colors.backgroundColor, 'important');
     document
       .getElementById('root')
       ?.style.setProperty('background-color', colors.backgroundColor, 'important');
-
-    document.body.style.setProperty('color', colors.backgroundColor, 'important');
   }, [colors.backgroundColor]);
 
   useEffect(() => {
