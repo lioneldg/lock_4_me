@@ -18,22 +18,9 @@ export type Colors = {
   backgroundTextColor: string;
   secondaryBackgroundColor: string;
   secondaryBackgroundTextColor: string;
-  secondaryBackgroundSelectorColor: string;
   accentColor: string;
-  accentTextColor: string;
-  accentHoverColor: string;
-  brandColor: string;
-  brandHoverColor: string;
-  brandTextColor: string;
-  brandHoverTextColor: string;
-  selectorColor: string;
   disabledColor: string;
-  separatorColor: string;
   borderColor: string;
-  redColor: string;
-  buttonPrimaryColor: string;
-  buttonRedColor: string;
-  buttonGreyColor: string;
 };
 
 export type Theme = 'light' | 'dark';
