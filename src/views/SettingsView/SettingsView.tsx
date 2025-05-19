@@ -11,6 +11,8 @@ import FormattedText from '../../components/FormattedText';
 import { useAppStore } from '../../store/appStore';
 import { useNavigate } from 'react-router';
 import styles from './style.module.css';
+import { Language } from '../../types';
+
 const languageOptions = [
   { value: 'en', label: 'English' },
   { value: 'fr', label: 'Français' }
@@ -40,7 +42,7 @@ const SettingsView: React.FC = () => {
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
-    setSettings({ language: lang });
+    setSettings({ language: lang as Language });
   };
 
   const handleBluetoothSelect = () => {
