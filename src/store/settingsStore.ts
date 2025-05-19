@@ -34,7 +34,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
         file_path: filePath
       });
       set({ settings: _settings });
-    } catch (_e) {
+    } catch (_) {
       // If not found, write default
       await invoke('write_settings', {
         file_path: filePath,
