@@ -1,8 +1,12 @@
+export type Language = 'en' | 'fr';
+
+export type Theme = 'light' | 'dark';
+
 export type Settings = {
   target_uuid: string;
   rssi_delta_max: number;
-  theme: string;
-  language: string;
+  theme: Theme;
+  language: Language;
 };
 
 export interface DiscoveredDevice {
@@ -22,5 +26,3 @@ export type Colors = {
   disabledColor: string;
   borderColor: string;
 };
-
-export type Theme = 'light' | 'dark';
