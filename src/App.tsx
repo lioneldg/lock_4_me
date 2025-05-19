@@ -12,6 +12,7 @@ import { useAppStore } from './store/appStore';
 import LoadingSpinner from './components/LoadingSpinner';
 import { useBluetoothStore } from './store/bluetoothStore';
 import { DiscoveredDevice } from './types';
+
 async function listen_bluetooth(targetUuid?: string, rssiDeltaMax?: number) {
   await invoke('listen_bluetooth', {
     target_uuid: targetUuid,
@@ -47,20 +48,16 @@ function App() {
   useEffect(() => {
     setIsLoading(true);
     loadSettings().finally(() => setIsLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadSettings, setIsLoading]);
 
   useEffect(() => {
     if (settings.theme) {
-      setTheme(settings.theme as 'light' | 'dark');
+      setTheme(settings.theme);
     }
-  }, [settings.theme, setTheme]);
-
-  useEffect(() => {
     if (settings.language && i18n.language !== settings.language) {
       i18n.changeLanguage(settings.language);
     }
-  }, [settings.language, i18n]);
+  }, [settings.theme, settings.language, i18n, setTheme]);
 
   const { target_uuid, rssi_delta_max } = useMemo(
     () => ({
@@ -73,19 +70,14 @@ function App() {
   useEffect(() => {
     listen_bluetooth(target_uuid, rssi_delta_max);
 
-    const unlistenBTEventPromise = listen('bluetooth-event', (event) =>
-      addEvent(event.payload as DiscoveredDevice)
-    );
-    const unlistenBTRefreshTimeoutPromise = listen('bluetooth-refresh-timeout', () => {
-      lockScreen();
-    });
-    const unlistenBTOverDeltaRSSIPromise = listen('bluetooth-over-delta-rssi', (_) => {
-      lockScreen();
-    });
+    const unlistenPromises = [
+      listen('bluetooth-event', (event) => addEvent(event.payload as DiscoveredDevice)),
+      listen('bluetooth-refresh-timeout', () => lockScreen()),
+      listen('bluetooth-over-delta-rssi', () => lockScreen())
+    ];
+
     return () => {
-      unlistenBTEventPromise.then((unlisten) => unlisten());
-      unlistenBTRefreshTimeoutPromise.then((unlisten) => unlisten());
-      unlistenBTOverDeltaRSSIPromise.then((unlisten) => unlisten());
+      unlistenPromises.forEach((promise) => promise.then((unlisten) => unlisten()));
     };
   }, [target_uuid, rssi_delta_max, addEvent]);
 
