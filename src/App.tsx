@@ -103,11 +103,7 @@ function App() {
         <Route path="/" element={<HomeView />} />
         <Route path="/settings" element={<SettingsView />} />
       </Routes>
-      {isLoading && (
-        <div className="loading-spinner">
-          <LoadingSpinner />
-        </div>
-      )}
+      {isLoading && <LoadingSpinner />}
     </BrowserRouter>
   );
 }
