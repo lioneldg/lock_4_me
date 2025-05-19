@@ -7,8 +7,8 @@ const ThemeContext = createContext<{
   colors: Colors;
   setTheme: (theme: Theme) => void;
 }>({
-  theme: 'light',
-  colors: lightColors,
+  theme: 'dark',
+  colors: darkColors,
   setTheme: () => {}
 });
 
