@@ -1,0 +1,82 @@
+name: 'build-macos'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+      release_type:
+        description: 'Release type'
+        required: false
+        default: 'draft'
+        type: choice
+        options:
+          - draft
+          - prerelease
+          - release
+      create_new_release:
+        description: 'Create new release or add to existing'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  build-macos:
+    permissions:
+      contents: write
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: install frontend dependencies
+        run: yarn install
+
+      - name: Check if release exists
+        id: check_release
+        run: |
+          TAG_NAME="app-v${{ github.event.inputs.version }}"
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+            echo "📋 Release $TAG_NAME already exists"
+          else
+            echo "release_exists=false" >> $GITHUB_OUTPUT
+            echo "📋 Release $TAG_NAME does not exist"
+          fi
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v${{ github.event.inputs.version }}
+          releaseName: 'App v${{ github.event.inputs.version }}'
+          releaseBody: |
+            ## 🚀 Release v${{ github.event.inputs.version }}
+
+            ### 🍎 macOS Builds
+            - Built on macOS Latest
+            - Universal binary (Intel + Apple Silicon)
+            - Includes .dmg installer and .app bundle
+          releaseDraft: ${{ (github.event.inputs.create_new_release == 'true' && github.event.inputs.release_type != 'release') || (steps.check_release.outputs.release_exists == 'true') }}
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
+          includeUpdaterJson: false

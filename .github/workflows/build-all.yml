@@ -1,0 +1,79 @@
+name: 'build-all-platforms'
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+      release_type:
+        description: 'Release type'
+        required: false
+        default: 'draft'
+        type: choice
+        options:
+          - draft
+          - prerelease
+          - release
+
+jobs:
+  trigger-builds:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Linux build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-linux.yml',
+              ref: 'main',
+              inputs: {
+                version: '${{ github.event.inputs.version }}',
+                release_type: '${{ github.event.inputs.release_type }}',
+                create_new_release: 'true'
+              }
+            });
+            console.log('🐧 Linux build triggered');
+
+      - name: Trigger Windows build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-windows.yml',
+              ref: 'main',
+              inputs: {
+                version: '${{ github.event.inputs.version }}',
+                release_type: '${{ github.event.inputs.release_type }}',
+                create_new_release: 'false'
+              }
+            });
+            console.log('🪟 Windows build triggered');
+
+      - name: Trigger macOS build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build-macos.yml',
+              ref: 'main',
+              inputs: {
+                version: '${{ github.event.inputs.version }}',
+                release_type: '${{ github.event.inputs.release_type }}',
+                create_new_release: 'false'
+              }
+            });
+            console.log('🍎 macOS build triggered');
+
+      - name: Summary
+        run: |
+          echo "🚀 All platform builds triggered for version ${{ github.event.inputs.version }}"
+          echo "📋 Check the Actions tab to monitor progress"
+          echo "🎯 All builds will contribute to the same release: app-v${{ github.event.inputs.version }}"
