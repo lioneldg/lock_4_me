@@ -77,6 +77,7 @@ jobs:
             - Built on macOS Latest
             - Universal binary (Intel + Apple Silicon)
             - Includes .dmg installer and .app bundle
+            - Ad-hoc code signed (requires "Open anyway" on first launch)
           releaseDraft: ${{ (github.event.inputs.create_new_release == 'true' && github.event.inputs.release_type != 'release') || (steps.check_release.outputs.release_exists == 'true') }}
           prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
           includeUpdaterJson: false
