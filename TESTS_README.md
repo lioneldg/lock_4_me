@@ -1,206 +1,206 @@
-# Tests Backend Rust - Application Tauri Lock-4-Me
+# Backend Rust Tests - Tauri Lock-4-Me Application
 
-Ce document décrit la suite de tests complète développée pour l'application Tauri Lock-4-Me côté backend (Rust).
+This document describes the complete test suite developed for the Tauri Lock-4-Me application backend (Rust).
 
-## Structure des Tests
+## Test Structure
 
-### 1. Tests Unitaires par Module
+### 1. Unit Tests by Module
 
 #### `src-tauri/src/read_write_settings.rs`
-- **Couverture** : Gestion des paramètres (lecture/écriture JSON)
-- **Tests inclus** :
-  - Sérialisation/désérialisation des paramètres
-  - Sauvegarde et chargement de fichiers
-  - Création de répertoires imbriqués
-  - Gestion des erreurs (fichiers inexistants, JSON invalide)
-  - Tests des commandes Tauri `write_settings` et `read_settings`
+- **Coverage**: Settings management (JSON read/write)
+- **Tests included**:
+  - Settings serialization/deserialization
+  - File saving and loading
+  - Nested directory creation
+  - Error handling (non-existent files, invalid JSON)
+  - Tauri command tests for `write_settings` and `read_settings`
 
 #### `src-tauri/src/lock_screen.rs`
-- **Couverture** : Verrouillage d'écran multiplateforme
-- **Tests inclus** :
-  - Validation des commandes pour chaque plateforme (Linux, macOS, Windows)
-  - Structure et format des commandes
-  - Gestion des erreurs
-  - Tests spécifiques aux environnements de bureau Linux
-  - Validation des arguments de commandes
+- **Coverage**: Cross-platform screen locking
+- **Tests included**:
+  - Command validation for each platform (Linux, macOS, Windows)
+  - Command structure and format
+  - Error handling
+  - Linux desktop environment specific tests
+  - Command argument validation
 
 #### `src-tauri/src/listen_bluetooth.rs`
-- **Couverture** : Gestion Bluetooth et écoute des événements
-- **Tests inclus** :
-  - Gestion des erreurs Bluetooth personnalisées
-  - Calculs RSSI et logique de seuil
-  - Validation des UUID
-  - Structure des événements JSON
-  - Logique de timeout et de reconnexion
-  - Tests asynchrones avec Tokio
+- **Coverage**: Bluetooth management and event listening
+- **Tests included**:
+  - Custom Bluetooth error handling
+  - RSSI calculations and threshold logic
+  - UUID validation
+  - JSON event structure
+  - Timeout and reconnection logic
+  - Asynchronous tests with Tokio
 
 #### `src-tauri/src/lib.rs`
-- **Couverture** : Configuration principale de l'application Tauri
-- **Tests inclus** :
-  - Gestion des handles Bluetooth
-  - Configuration des logs
-  - Logique de visibilité des fenêtres
-  - Configuration de la barre système
-  - Gestion des événements de menu
-  - Politiques d'activation (macOS)
+- **Coverage**: Main Tauri application configuration
+- **Tests included**:
+  - Bluetooth handle management
+  - Log configuration
+  - Window visibility logic
+  - System tray configuration
+  - Menu event handling
+  - Activation policies (macOS)
 
 #### `crates/bt_discover/src/lib.rs`
-- **Couverture** : Crate de découverte Bluetooth
-- **Tests inclus** :
-  - Création et manipulation des structures `DiscoveredDevice`
-  - Logique de filtrage par UUID
-  - Gestion des types d'événements Bluetooth
-  - Validation des valeurs RSSI
-  - Gestion des erreurs d'adaptation Bluetooth
-  - Tests de parsing UUID
+- **Coverage**: Bluetooth discovery crate
+- **Tests included**:
+  - `DiscoveredDevice` structure creation and manipulation
+  - UUID filtering logic
+  - Bluetooth event type handling
+  - RSSI value validation
+  - Bluetooth adapter error handling
+  - UUID parsing tests
 
-### 2. Tests d'Intégration
+### 2. Integration Tests
 
 #### `src-tauri/tests/integration_tests.rs`
-- **Couverture** : Tests inter-modules et workflows complets
-- **Tests inclus** :
-  - Workflow complet des paramètres (écriture → lecture → validation)
-  - Compatibilité entre modules (UUID des paramètres ↔ module Bluetooth)
-  - Gestion des erreurs cross-module
-  - Persistance avec caractères spéciaux
-  - Cycle de vie des handles Bluetooth
-  - Cohérence des messages d'erreur
-  - Calculs RSSI intégrés
-  - Tests asynchrones intégrés
-  - Sérialisation/désérialisation complète
+- **Coverage**: Inter-module tests and complete workflows
+- **Tests included**:
+  - Complete settings workflow (write → read → validation)
+  - Inter-module compatibility (settings UUID ↔ Bluetooth module)
+  - Cross-module error handling
+  - Persistence with special characters
+  - Bluetooth handle lifecycle
+  - Error message consistency
+  - Integrated RSSI calculations
+  - Integrated asynchronous tests
+  - Complete serialization/deserialization
 
-## Commandes d'Exécution
+## Execution Commands
 
-### Exécuter tous les tests
+### Run all tests
 ```bash
 cd src-tauri
 cargo test
 ```
 
-### Exécuter des tests spécifiques par module
+### Run specific tests by module
 ```bash
-# Tests des paramètres
+# Settings tests
 cargo test read_write_settings
 
-# Tests du verrouillage d'écran
+# Screen lock tests
 cargo test lock_screen
 
-# Tests Bluetooth
+# Bluetooth tests
 cargo test listen_bluetooth
 
-# Tests de la bibliothèque principale
+# Main library tests
 cargo test lib
 
-# Tests du crate bt_discover
+# bt_discover crate tests
 cd ../crates/bt_discover
 cargo test
 ```
 
-### Exécuter les tests d'intégration uniquement
+### Run integration tests only
 ```bash
 cd src-tauri
 cargo test integration_tests
 ```
 
-### Exécuter avec sortie détaillée
+### Run with detailed output
 ```bash
 cargo test -- --nocapture
 ```
 
-### Exécuter les tests ignorés (tests d'intégration système)
+### Run ignored tests (system integration tests)
 ```bash
 cargo test -- --ignored
 ```
 
-## Dépendances de Test
+## Test Dependencies
 
-Les dépendances suivantes ont été ajoutées pour les tests :
+The following dependencies have been added for testing:
 
 ### `src-tauri/Cargo.toml`
 ```toml
 [dev-dependencies]
-tokio-test = "0.4"      # Tests asynchrones
-mockall = "0.12"        # Mocking (pour tests futurs)
-tempfile = "3.8"        # Fichiers temporaires pour tests
-serial_test = "3.0"     # Tests séquentiels si nécessaire
+tokio-test = "0.4"      # Asynchronous tests
+mockall = "0.12"        # Mocking (for future tests)
+tempfile = "3.8"        # Temporary files for tests
+serial_test = "3.0"     # Sequential tests if necessary
 ```
 
 ### `crates/bt_discover/Cargo.toml`
 ```toml
 [dev-dependencies]
-tokio-test = "0.4"      # Tests asynchrones
+tokio-test = "0.4"      # Asynchronous tests
 mockall = "0.12"        # Mocking
 ```
 
-## Couverture de Test
+## Test Coverage
 
-### Fonctionnalités Testées
+### Tested Features
 
-1. **Gestion des Paramètres** ✅
-   - Lecture/écriture JSON
-   - Validation des données
-   - Gestion des erreurs de fichiers
+1. **Settings Management** ✅
+   - JSON read/write
+   - Data validation
+   - File error handling
 
-2. **Verrouillage d'Écran** ✅
-   - Support multiplateforme
-   - Validation des commandes
-   - Gestion des erreurs système
+2. **Screen Locking** ✅
+   - Cross-platform support
+   - Command validation
+   - System error handling
 
 3. **Bluetooth** ✅
-   - Découverte d'appareils
-   - Calculs RSSI
-   - Gestion des événements
-   - Validation UUID
+   - Device discovery
+   - RSSI calculations
+   - Event handling
+   - UUID validation
 
-4. **Configuration Tauri** ✅
-   - Setup de l'application
-   - Gestion des fenêtres
-   - Configuration système
+4. **Tauri Configuration** ✅
+   - Application setup
+   - Window management
+   - System configuration
 
-5. **Intégration** ✅
-   - Workflows complets
-   - Communication inter-modules
-   - Persistance des données
+5. **Integration** ✅
+   - Complete workflows
+   - Inter-module communication
+   - Data persistence
 
-### Types de Tests
+### Test Types
 
-- **Tests Unitaires** : ~50 tests couvrant chaque fonction/module
-- **Tests d'Intégration** : ~12 tests couvrant les workflows complets
-- **Tests Asynchrones** : Tests avec Tokio pour les opérations async
-- **Tests Multiplateforme** : Tests spécifiques Linux/macOS/Windows
-- **Tests d'Erreur** : Validation de tous les cas d'erreur
+- **Unit Tests**: ~50 tests covering each function/module
+- **Integration Tests**: ~12 tests covering complete workflows
+- **Asynchronous Tests**: Tests with Tokio for async operations
+- **Cross-platform Tests**: Linux/macOS/Windows specific tests
+- **Error Tests**: Validation of all error cases
 
-## Cas de Test Spéciaux
+## Special Test Cases
 
-### Tests Ignorés par Défaut
-Certains tests sont marqués `#[ignore]` car ils :
-- Nécessitent des permissions système (verrouillage d'écran)
-- Requièrent du matériel Bluetooth
-- Peuvent interférer avec l'environnement de développement
+### Tests Ignored by Default
+Some tests are marked `#[ignore]` because they:
+- Require system permissions (screen locking)
+- Require Bluetooth hardware
+- May interfere with the development environment
 
-Pour les exécuter : `cargo test -- --ignored`
+To run them: `cargo test -- --ignored`
 
-### Tests Conditionnels par Plateforme
-- Tests Linux : `#[cfg(target_os = "linux")]`
-- Tests macOS : `#[cfg(target_os = "macos")]`
-- Tests Windows : `#[cfg(target_os = "windows")]`
+### Platform-Conditional Tests
+- Linux tests: `#[cfg(target_os = "linux")]`
+- macOS tests: `#[cfg(target_os = "macos")]`
+- Windows tests: `#[cfg(target_os = "windows")]`
 
-## Tests CI/CD
+## CI/CD Tests
 
-Les tests sont conçus pour fonctionner dans les environnements CI/CD :
-- Pas de dépendances externes (sauf Bluetooth pour tests spécifiques)
-- Utilisation de fichiers temporaires
-- Gestion des erreurs appropriée pour les environnements sans interface graphique
+Tests are designed to work in CI/CD environments:
+- No external dependencies (except Bluetooth for specific tests)
+- Use of temporary files
+- Appropriate error handling for headless environments
 
-## Amélirations Futures
+## Future Improvements
 
-1. **Mocking avancé** : Utilisation de `mockall` pour simuler les APIs Bluetooth
-2. **Tests de performance** : Benchmarks pour les opérations critiques
-3. **Tests de stress** : Tests de charge pour les streams Bluetooth
-4. **Tests de sécurité** : Validation des entrées malveillantes
+1. **Advanced mocking**: Use of `mockall` to simulate Bluetooth APIs
+2. **Performance tests**: Benchmarks for critical operations
+3. **Stress tests**: Load testing for Bluetooth streams
+4. **Security tests**: Validation of malicious inputs
 
 ## Maintenance
 
-- Les tests doivent être mis à jour à chaque modification de l'API
-- Nouveaux tests requis pour chaque nouvelle fonctionnalité
-- Revue périodique de la couverture de test avec `cargo tarpaulin`
+- Tests must be updated with each API modification
+- New tests required for each new feature
+- Periodic test coverage review with `cargo tarpaulin`
