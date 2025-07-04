@@ -1,0 +1,15 @@
+{
+  "home": {
+    "title": "Welcome to Lock4Me",
+    "discoveryMode": "Discovery Mode: Showing all Bluetooth devices",
+    "targetMode": "Target Mode: Monitoring device {{uuid}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "select_bluetooth": "Select Bluetooth device",
+    "selected": "Selected:",
+    "rssi_sensitivity": "RSSI Sensitivity"
+  },
+  "loading": "Loading..."
+}
