@@ -7,9 +7,9 @@ use tauri::{
     Builder, Manager, WindowEvent,
 };
 use tauri_plugin_log;
-mod listen_bluetooth;
-mod lock_screen;
-mod read_write_settings;
+pub mod listen_bluetooth;
+pub mod lock_screen;
+pub mod read_write_settings;
 
 /// Handles showing or hiding the main window
 fn toggle_window_visibility(window: &tauri::WebviewWindow) -> Result<(), String> {

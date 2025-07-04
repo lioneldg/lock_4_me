@@ -173,31 +173,14 @@ pub async fn listen_bluetooth(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Arc;
-    use tokio_test;
+    use std::sync::Mutex;
 
     // Mock AppHandle for testing
-    struct MockAppHandle {
-        pub emitted_events: Arc<Mutex<Vec<(String, serde_json::Value)>>>,
-    }
-
+    struct MockAppHandle;
+    
     impl MockAppHandle {
-        fn new() -> Self {
-            Self {
-                emitted_events: Arc::new(Mutex::new(Vec::new())),
-            }
-        }
-
-        fn emit(&self, event: &str, payload: serde_json::Value) -> Result<(), String> {
-            self.emitted_events
-                .lock()
-                .unwrap()
-                .push((event.to_string(), payload));
+        fn emit_all<T: serde::Serialize>(&self, _event: &str, _payload: T) -> Result<(), String> {
             Ok(())
-        }
-
-        fn get_emitted_events(&self) -> Vec<(String, serde_json::Value)> {
-            self.emitted_events.lock().unwrap().clone()
         }
     }
 
@@ -218,15 +201,18 @@ mod tests {
             "Bluetooth discovery error: Test error"
         );
 
-        let uuid_error = BluetoothError::UuidParse(uuid::Error::InvalidLength(5));
+        let uuid_result = Uuid::parse_str("invalid");
+        let uuid_error = BluetoothError::UuidParse(uuid_result.unwrap_err());
         assert!(uuid_error.to_string().contains("UUID parsing error"));
     }
 
     #[test]
     fn test_bluetooth_error_from_uuid_error() {
-        let uuid_error = uuid::Error::InvalidLength(5);
-        let bluetooth_error: BluetoothError = uuid_error.into();
+        let uuid_str = "invalid-uuid";
+        let uuid_result = Uuid::parse_str(uuid_str);
+        assert!(uuid_result.is_err(), "Invalid UUID should fail to parse");
         
+        let bluetooth_error: BluetoothError = uuid_result.unwrap_err().into();
         match bluetooth_error {
             BluetoothError::UuidParse(_) => assert!(true),
             _ => panic!("Expected UuidParse error"),
@@ -276,10 +262,8 @@ mod tests {
         assert!(allowed, "Should always allow when no delta max is set");
     }
 
-    #[tokio::test]
-    async fn test_uuid_parsing_in_listen_bluetooth() {
-        use tauri::test::{MockBuilder, mock_context};
-        
+        #[test]
+    fn test_uuid_parsing_in_listen_bluetooth() {
         // Test valid UUID parsing
         let valid_uuid = "12345678-1234-1234-1234-123456789012";
         let result = Uuid::parse_str(valid_uuid);
@@ -366,8 +350,8 @@ mod tests {
     }
 
     // Integration-style test that simulates the UUID validation logic
-    #[tokio::test]
-    async fn test_uuid_validation_workflow() {
+    #[test]
+    fn test_uuid_validation_workflow() {
         // Test the workflow that listen_bluetooth would follow
 
         // Valid UUID case

@@ -2,12 +2,13 @@ use serde::{Deserialize, Serialize};
 use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::Path;
-#[derive(Serialize, Deserialize)]
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Settings {
-    target_uuid: String,
-    rssi_delta_max: i16,
-    theme: String,
-    language: String,
+    pub target_uuid: String,
+    pub rssi_delta_max: i16,
+    pub theme: String,
+    pub language: String,
 }
 
 impl Settings {
