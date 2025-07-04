@@ -99,7 +99,7 @@ mod integration_tests {
             target_uuid: test_uuid.to_string(),
             rssi_delta_max: -50,
             theme: "light".to_string(),
-            language: "en".to_string(),
+            language: "fr".to_string(),
         };
 
         // Test that the UUID in settings can be parsed by Bluetooth module

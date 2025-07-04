@@ -14,8 +14,8 @@ import styles from './style.module.css';
 import { Language } from '../../types';
 
 const languageOptions = [
-  { value: 'en', label: 'English (US)' },
-  { value: 'en-GB', label: 'English (UK)' }
+  { value: 'en', label: 'English' },
+  { value: 'fr', label: 'Français' }
 ];
 
 const SettingsView: React.FC = () => {

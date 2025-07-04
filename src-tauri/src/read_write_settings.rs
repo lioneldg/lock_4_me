@@ -180,7 +180,7 @@ mod tests {
             "target_uuid": "test-uuid",
             "rssi_delta_max": -30,
             "theme": "light",
-            "language": "en"
+            "language": "fr"
         }"#;
         fs::write(&file_path, json_content).unwrap();
 
@@ -191,6 +191,6 @@ mod tests {
         assert_eq!(settings.target_uuid, "test-uuid");
         assert_eq!(settings.rssi_delta_max, -30);
         assert_eq!(settings.theme, "light");
-        assert_eq!(settings.language, "en");
+        assert_eq!(settings.language, "fr");
     }
 }
