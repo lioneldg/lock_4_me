@@ -151,36 +151,7 @@ pub fn run() {
 mod tests {
     use super::*;
 
-    // Test struct to simulate window behavior for testing
-    #[derive(Debug)]
-    struct MockWindow {
-        is_visible: bool,
-        should_fail_visibility_check: bool,
-        should_fail_hide: bool,
-        should_fail_show: bool,
-        should_fail_skip_taskbar: bool,
-        should_fail_focus: bool,
-    }
 
-    impl MockWindow {
-        fn new() -> Self {
-            Self {
-                is_visible: false,
-                should_fail_visibility_check: false,
-                should_fail_hide: false,
-                should_fail_show: false,
-                should_fail_skip_taskbar: false,
-                should_fail_focus: false,
-            }
-        }
-
-        fn visible() -> Self {
-            Self {
-                is_visible: true,
-                ..Self::new()
-            }
-        }
-    }
 
     #[test]
     fn test_bluetooth_listener_handle_initialization() {

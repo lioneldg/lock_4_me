@@ -245,7 +245,7 @@ mod tests {
             }
             _ => {
                 // Other commands should still have valid structure
-                assert!(args.len() >= 0, "All commands should have non-negative arg count");
+                // (args.len() is always >= 0 by definition)
             }
         }
     }

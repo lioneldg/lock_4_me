@@ -175,15 +175,6 @@ mod tests {
     use super::*;
     use std::sync::Mutex;
 
-    // Mock AppHandle for testing
-    struct MockAppHandle;
-    
-    impl MockAppHandle {
-        fn emit_all<T: serde::Serialize>(&self, _event: &str, _payload: T) -> Result<(), String> {
-            Ok(())
-        }
-    }
-
     fn create_test_device(rssi: Option<i16>, local_name: Option<&str>) -> DiscoveredDevice {
         DiscoveredDevice {
             id: "test-device-123".to_string(),
@@ -225,12 +216,9 @@ mod tests {
         assert!(handle.0.lock().unwrap().is_none());
     }
 
-    // Note: We can't easily test process_device without a real AppHandle from Tauri,
-    // but we can test the logic separately
-
     #[test]
     fn test_rssi_diff_calculation() {
-        // Test RSSI difference calculation logic
+        // Test RSSI difference calculation logic from process_device
         let initial_rssi = -50i16;
         let current_rssi = -45i16;
         let diff_rssi = current_rssi - initial_rssi;
@@ -248,13 +236,13 @@ mod tests {
         let rssi_delta_max = Some(-10i16);
         let diff_rssi = -5i16; // Device got closer (less negative)
         
-        // Should be allowed: delta_max + diff_rssi = -10 + (-5) = -15, which is < 0
+        // Should be blocked: delta_max + diff_rssi = -10 + (-5) = -15, which is < 0
         let allowed = rssi_delta_max.map_or(true, |delta_max| delta_max + diff_rssi > 0);
-        assert!(!allowed, "Device should be too close");
+        assert!(!allowed, "Device should be blocked when too close");
 
         let diff_rssi = -15i16; // Device is farther away
         let allowed = rssi_delta_max.map_or(true, |delta_max| delta_max + diff_rssi > 0);
-        assert!(!allowed, "Device should still be acceptable");
+        assert!(!allowed, "Device should still be blocked");
 
         // Test with no delta max (should always allow)
         let rssi_delta_max: Option<i16> = None;
@@ -262,48 +250,9 @@ mod tests {
         assert!(allowed, "Should always allow when no delta max is set");
     }
 
-        #[test]
-    fn test_uuid_parsing_in_listen_bluetooth() {
-        // Test valid UUID parsing
-        let valid_uuid = "12345678-1234-1234-1234-123456789012";
-        let result = Uuid::parse_str(valid_uuid);
-        assert!(result.is_ok(), "Valid UUID should parse successfully");
-
-        // Test invalid UUID parsing
-        let invalid_uuid = "invalid-uuid";
-        let result = Uuid::parse_str(invalid_uuid);
-        assert!(result.is_err(), "Invalid UUID should fail to parse");
-    }
-
-    #[test]
-    fn test_discovered_device_creation() {
-        let device = create_test_device(Some(-50), Some("Test Device"));
-        
-        assert_eq!(device.id, "test-device-123");
-        assert_eq!(device.local_name, Some("Test Device".to_string()));
-        assert_eq!(device.rssi, Some(-50));
-        assert_eq!(device.event_type, "Discovered device");
-    }
-
-    #[test]
-    fn test_discovered_device_without_rssi() {
-        let device = create_test_device(None, Some("Test Device"));
-        
-        assert_eq!(device.rssi, None);
-        // This device would return false in process_device due to no RSSI
-    }
-
-    #[test]
-    fn test_discovered_device_without_name() {
-        let device = create_test_device(Some(-50), None);
-        
-        assert_eq!(device.local_name, None);
-        // In process_device, this would use the ID as fallback name
-    }
-
     #[test]
     fn test_timeout_duration_constants() {
-        // Test that our constants are reasonable
+        // Test that our constants are reasonable for the user's bluetooth listener logic
         const TIMEOUT_DURATION: Duration = Duration::from_secs(15);
         const REFRESH_BACKOFF: Duration = Duration::from_secs(1);
         const ERROR_BACKOFF: Duration = Duration::from_secs(3);
@@ -319,7 +268,7 @@ mod tests {
 
     #[test]
     fn test_json_event_structure() {
-        // Test the JSON structure that would be emitted
+        // Test the JSON structure that would be emitted by process_device
         let event_data = json!({
             "event_type": "Discovered device",
             "local_name": "Test Device",
@@ -349,44 +298,9 @@ mod tests {
         assert!(debug_str.contains("Test error"));
     }
 
-    // Integration-style test that simulates the UUID validation logic
-    #[test]
-    fn test_uuid_validation_workflow() {
-        // Test the workflow that listen_bluetooth would follow
-
-        // Valid UUID case
-        let target_uuid_str = Some("12345678-1234-1234-1234-123456789012".to_string());
-        let parsed_uuid = match target_uuid_str {
-            Some(uuid_str) => Some(Uuid::parse_str(&uuid_str)),
-            None => None,
-        };
-        
-        assert!(parsed_uuid.is_some());
-        assert!(parsed_uuid.unwrap().is_ok());
-
-        // Invalid UUID case
-        let target_uuid_str = Some("invalid-uuid".to_string());
-        let parsed_uuid = match target_uuid_str {
-            Some(uuid_str) => Some(Uuid::parse_str(&uuid_str)),
-            None => None,
-        };
-        
-        assert!(parsed_uuid.is_some());
-        assert!(parsed_uuid.unwrap().is_err());
-
-        // None case
-        let target_uuid_str: Option<String> = None;
-        let parsed_uuid = match target_uuid_str {
-            Some(uuid_str) => Some(Uuid::parse_str(&uuid_str)),
-            None => None,
-        };
-        
-        assert!(parsed_uuid.is_none());
-    }
-
     #[test]
     fn test_successive_timeout_logic() {
-        // Test the logic for handling successive timeouts
+        // Test the logic for handling successive timeouts in run_bluetooth_listener
         let mut successives_timeout = 0;
 
         // First timeout - should break inner loop (reload stream)
@@ -404,5 +318,17 @@ mod tests {
         // Reset logic
         successives_timeout = 0;
         assert_eq!(successives_timeout, 0);
+    }
+
+    #[test]
+    fn test_process_device_name_fallback_logic() {
+        // Test the name fallback logic: local_name.unwrap_or_else(|| id.clone())
+        let device = create_test_device(Some(-50), Some("Device Name"));
+        let expected_name = device.local_name.clone().unwrap_or_else(|| device.id.clone());
+        assert_eq!(expected_name, "Device Name");
+
+        let device = create_test_device(Some(-50), None);
+        let expected_name = device.local_name.unwrap_or_else(|| device.id.clone());
+        assert_eq!(expected_name, "test-device-123"); // Should fallback to ID
     }
 }

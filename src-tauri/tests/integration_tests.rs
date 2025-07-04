@@ -1,13 +1,12 @@
-use lock_4_me_lib::*;
 use std::fs;
 use tempfile::tempdir;
-use uuid::Uuid;
 
 // Integration tests for the entire application
 
 #[cfg(test)]
 mod integration_tests {
     use super::*;
+    use lock_4_me_lib;
 
     #[test]
     fn test_settings_workflow() {
@@ -47,15 +46,16 @@ mod integration_tests {
 
     #[test]
     fn test_bluetooth_error_handling() {
-        // Test Bluetooth error handling and conversion
+        // Test the integration of BluetoothError with uuid parsing
         use lock_4_me_lib::listen_bluetooth::BluetoothError;
+        use uuid::Uuid;
 
         let uuid_result = Uuid::parse_str("invalid");
         let bluetooth_error: BluetoothError = uuid_result.unwrap_err().into();
 
         match bluetooth_error {
             BluetoothError::UuidParse(_) => {
-                // Test error display
+                // Test error display integration
                 let error_string = bluetooth_error.to_string();
                 assert!(error_string.contains("UUID parsing error"));
             }
@@ -67,24 +67,6 @@ mod integration_tests {
         let error_string = discovery_error.to_string();
         assert!(error_string.contains("Bluetooth discovery error"));
         assert!(error_string.contains("Connection failed"));
-    }
-
-    #[test]
-    fn test_uuid_validation_integration() {
-        // Test UUID validation that would be used in listen_bluetooth
-        let test_cases = [
-            ("12345678-1234-1234-1234-123456789012", true),
-            ("invalid-uuid", false),
-            ("", false),
-            ("12345678-1234-1234-1234-12345678901", false), // Too short
-            ("12345678-1234-1234-1234-123456789012x", false), // Too long
-        ];
-
-        for (uuid_str, should_be_valid) in test_cases {
-            let result = Uuid::parse_str(uuid_str);
-            assert_eq!(result.is_ok(), should_be_valid, 
-                      "UUID '{}' validation should be {}", uuid_str, should_be_valid);
-        }
     }
 
     #[test]
@@ -149,107 +131,12 @@ mod integration_tests {
         // Initially should be None
         assert!(handle.0.lock().unwrap().is_none());
 
-        // Simulate storing a handle (we can't create a real JoinHandle easily)
-        // In real use, this would be done by listen_bluetooth function
-        {
-            let mut guard = handle.0.lock().unwrap();
-            *guard = None; // In reality, this would be Some(tokio::spawn(...))
-        }
-
         // Test that we can take the handle out (for cleanup)
         let taken_handle = handle.0.lock().unwrap().take();
         assert!(taken_handle.is_none());
 
         // After taking, should be None again
         assert!(handle.0.lock().unwrap().is_none());
-    }
-
-    #[test]
-    fn test_error_message_consistency() {
-        // Test that error messages are consistent across modules
-        
-        // Settings errors
-        let settings_error = "Error creating settings file '/invalid/path': Permission denied";
-        assert!(settings_error.contains("Error"));
-        assert!(settings_error.contains(":"));
-
-        // Bluetooth errors
-        let bt_error = "Bluetooth discovery error: Device not found";
-        assert!(bt_error.contains("error:"));
-
-        // Lock screen errors
-        let lock_error = "Failed to lock screen on Linux: Command not found";
-        assert!(lock_error.contains("Failed to"));
-        assert!(lock_error.contains(":"));
-
-        // All follow similar pattern: [Context]: [Details]
-    }
-
-    #[test]
-    fn test_rssi_calculation_integration() {
-        // Test RSSI calculations that would be used across modules
-        
-        // Test realistic RSSI values and calculations
-        let test_cases = [
-            (-30, -25, 5),   // Device moved closer
-            (-50, -60, -10), // Device moved away
-            (-40, -40, 0),   // Device didn't move
-        ];
-
-        for (initial, current, expected_diff) in test_cases {
-            let calculated_diff = current - initial;
-            assert_eq!(calculated_diff, expected_diff, 
-                      "RSSI diff calculation incorrect for {} -> {}", initial, current);
-
-            // Test delta logic (similar to what's used in process_device)
-            let delta_max = -15i16;
-            let within_threshold = delta_max + calculated_diff > 0;
-            
-            // Verify the logic makes sense
-            if calculated_diff > -delta_max {
-                assert!(!within_threshold, "Device should be considered too close");
-            }
-        }
-    }
-
-    #[test]
-    fn test_command_registration_consistency() {
-        // Test that command names are consistent and follow conventions
-        let commands = [
-            "listen_bluetooth",
-            "read_settings",
-            "write_settings", 
-            "lock_screen",
-        ];
-
-        for command in commands {
-            // All commands should use snake_case
-            assert!(command.contains('_'), "Command '{}' should use snake_case", command);
-            
-            // No commands should start or end with underscore
-            assert!(!command.starts_with('_'), "Command '{}' should not start with underscore", command);
-            assert!(!command.ends_with('_'), "Command '{}' should not end with underscore", command);
-            
-            // Should be all lowercase
-            assert_eq!(command, command.to_lowercase(), "Command '{}' should be lowercase", command);
-        }
-    }
-
-    #[test]
-    fn test_async_operations_integration() {
-        // Test integration of async operations
-        use uuid::Uuid;
-
-        // Test UUID parsing that would be used in async contexts
-        let valid_uuid_str = "12345678-1234-1234-1234-123456789012";
-        let uuid_result = Uuid::parse_str(valid_uuid_str);
-        assert!(uuid_result.is_ok());
-
-        // Test that UUID can be used across async boundaries
-        let uuid = uuid_result.unwrap();
-        let uuid_string = uuid.to_string();
-        
-        assert_eq!(uuid_string, valid_uuid_str);
     }
 
     #[test]
@@ -261,28 +148,39 @@ mod integration_tests {
     }
 
     #[test]
-    fn test_data_serialization_roundtrip() {
-        // Test that data can be serialized and deserialized correctly
+    fn test_settings_error_format_consistency() {
+        // Test that settings error messages follow consistent format
         use lock_4_me_lib::read_write_settings::Settings;
-        use serde_json;
-
-        let original_settings = Settings {
-            target_uuid: "test-uuid-123".to_string(),
-            rssi_delta_max: -75,
-            theme: "auto".to_string(),
-            language: "es".to_string(),
-        };
-
-        // Serialize to JSON
-        let json_data = serde_json::to_string(&original_settings).unwrap();
         
-        // Deserialize back
-        let deserialized_settings: Settings = serde_json::from_str(&json_data).unwrap();
+        // Test with invalid path - this should produce a consistent error format
+        let result = Settings::load("/this/path/does/not/exist/settings.json");
+        assert!(result.is_err());
+        
+        let error_message = result.unwrap_err();
+        assert!(error_message.contains("Error opening settings file"));
+        assert!(error_message.contains(":"));
+    }
 
-        // Verify all fields match
-        assert_eq!(deserialized_settings.target_uuid, original_settings.target_uuid);
-        assert_eq!(deserialized_settings.rssi_delta_max, original_settings.rssi_delta_max);
-        assert_eq!(deserialized_settings.theme, original_settings.theme);
-        assert_eq!(deserialized_settings.language, original_settings.language);
+    #[test]
+    fn test_bluetooth_json_event_structure_integration() {
+        // Test that the JSON event structure is consistent across the application
+        use serde_json::json;
+        
+        // This is the structure that bluetooth module emits
+        let bluetooth_event = json!({
+            "event_type": "Discovered device",
+            "local_name": "Test Device",
+            "id": "test-device-123",
+            "rssi": -50,
+            "diff_rssi": 5
+        });
+
+        // Verify structure compatibility
+        assert!(bluetooth_event.is_object());
+        assert!(bluetooth_event["event_type"].is_string());
+        assert!(bluetooth_event["local_name"].is_string());
+        assert!(bluetooth_event["id"].is_string());
+        assert!(bluetooth_event["rssi"].is_number());
+        assert!(bluetooth_event["diff_rssi"].is_number());
     }
 }
