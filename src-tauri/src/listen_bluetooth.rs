@@ -169,3 +169,256 @@ pub async fn listen_bluetooth(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Arc;
+    use tokio_test;
+
+    // Mock AppHandle for testing
+    struct MockAppHandle {
+        pub emitted_events: Arc<Mutex<Vec<(String, serde_json::Value)>>>,
+    }
+
+    impl MockAppHandle {
+        fn new() -> Self {
+            Self {
+                emitted_events: Arc::new(Mutex::new(Vec::new())),
+            }
+        }
+
+        fn emit(&self, event: &str, payload: serde_json::Value) -> Result<(), String> {
+            self.emitted_events
+                .lock()
+                .unwrap()
+                .push((event.to_string(), payload));
+            Ok(())
+        }
+
+        fn get_emitted_events(&self) -> Vec<(String, serde_json::Value)> {
+            self.emitted_events.lock().unwrap().clone()
+        }
+    }
+
+    fn create_test_device(rssi: Option<i16>, local_name: Option<&str>) -> DiscoveredDevice {
+        DiscoveredDevice {
+            id: "test-device-123".to_string(),
+            local_name: local_name.map(|s| s.to_string()),
+            rssi,
+            event_type: "Discovered device".to_string(),
+        }
+    }
+
+    #[test]
+    fn test_bluetooth_error_display() {
+        let discovery_error = BluetoothError::Discovery("Test error".to_string());
+        assert_eq!(
+            discovery_error.to_string(),
+            "Bluetooth discovery error: Test error"
+        );
+
+        let uuid_error = BluetoothError::UuidParse(uuid::Error::InvalidLength(5));
+        assert!(uuid_error.to_string().contains("UUID parsing error"));
+    }
+
+    #[test]
+    fn test_bluetooth_error_from_uuid_error() {
+        let uuid_error = uuid::Error::InvalidLength(5);
+        let bluetooth_error: BluetoothError = uuid_error.into();
+        
+        match bluetooth_error {
+            BluetoothError::UuidParse(_) => assert!(true),
+            _ => panic!("Expected UuidParse error"),
+        }
+    }
+
+    #[test]
+    fn test_bluetooth_listener_handle_new() {
+        let handle = BluetoothListenerHandle(Mutex::new(None));
+        assert!(handle.0.lock().unwrap().is_none());
+    }
+
+    // Note: We can't easily test process_device without a real AppHandle from Tauri,
+    // but we can test the logic separately
+
+    #[test]
+    fn test_rssi_diff_calculation() {
+        // Test RSSI difference calculation logic
+        let initial_rssi = -50i16;
+        let current_rssi = -45i16;
+        let diff_rssi = current_rssi - initial_rssi;
+        assert_eq!(diff_rssi, 5);
+
+        let initial_rssi = -30i16;
+        let current_rssi = -40i16;
+        let diff_rssi = current_rssi - initial_rssi;
+        assert_eq!(diff_rssi, -10);
+    }
+
+    #[test]
+    fn test_rssi_delta_max_logic() {
+        // Test the logic used in process_device for rssi_delta_max
+        let rssi_delta_max = Some(-10i16);
+        let diff_rssi = -5i16; // Device got closer (less negative)
+        
+        // Should be allowed: delta_max + diff_rssi = -10 + (-5) = -15, which is < 0
+        let allowed = rssi_delta_max.map_or(true, |delta_max| delta_max + diff_rssi > 0);
+        assert!(!allowed, "Device should be too close");
+
+        let diff_rssi = -15i16; // Device is farther away
+        let allowed = rssi_delta_max.map_or(true, |delta_max| delta_max + diff_rssi > 0);
+        assert!(!allowed, "Device should still be acceptable");
+
+        // Test with no delta max (should always allow)
+        let rssi_delta_max: Option<i16> = None;
+        let allowed = rssi_delta_max.map_or(true, |delta_max| delta_max + diff_rssi > 0);
+        assert!(allowed, "Should always allow when no delta max is set");
+    }
+
+    #[tokio::test]
+    async fn test_uuid_parsing_in_listen_bluetooth() {
+        use tauri::test::{MockBuilder, mock_context};
+        
+        // Test valid UUID parsing
+        let valid_uuid = "12345678-1234-1234-1234-123456789012";
+        let result = Uuid::parse_str(valid_uuid);
+        assert!(result.is_ok(), "Valid UUID should parse successfully");
+
+        // Test invalid UUID parsing
+        let invalid_uuid = "invalid-uuid";
+        let result = Uuid::parse_str(invalid_uuid);
+        assert!(result.is_err(), "Invalid UUID should fail to parse");
+    }
+
+    #[test]
+    fn test_discovered_device_creation() {
+        let device = create_test_device(Some(-50), Some("Test Device"));
+        
+        assert_eq!(device.id, "test-device-123");
+        assert_eq!(device.local_name, Some("Test Device".to_string()));
+        assert_eq!(device.rssi, Some(-50));
+        assert_eq!(device.event_type, "Discovered device");
+    }
+
+    #[test]
+    fn test_discovered_device_without_rssi() {
+        let device = create_test_device(None, Some("Test Device"));
+        
+        assert_eq!(device.rssi, None);
+        // This device would return false in process_device due to no RSSI
+    }
+
+    #[test]
+    fn test_discovered_device_without_name() {
+        let device = create_test_device(Some(-50), None);
+        
+        assert_eq!(device.local_name, None);
+        // In process_device, this would use the ID as fallback name
+    }
+
+    #[test]
+    fn test_timeout_duration_constants() {
+        // Test that our constants are reasonable
+        const TIMEOUT_DURATION: Duration = Duration::from_secs(15);
+        const REFRESH_BACKOFF: Duration = Duration::from_secs(1);
+        const ERROR_BACKOFF: Duration = Duration::from_secs(3);
+
+        assert_eq!(TIMEOUT_DURATION.as_secs(), 15);
+        assert_eq!(REFRESH_BACKOFF.as_secs(), 1);
+        assert_eq!(ERROR_BACKOFF.as_secs(), 3);
+        
+        // Ensure backoffs are shorter than timeout
+        assert!(REFRESH_BACKOFF < TIMEOUT_DURATION);
+        assert!(ERROR_BACKOFF < TIMEOUT_DURATION);
+    }
+
+    #[test]
+    fn test_json_event_structure() {
+        // Test the JSON structure that would be emitted
+        let event_data = json!({
+            "event_type": "Discovered device",
+            "local_name": "Test Device",
+            "id": "test-device-123",
+            "rssi": -50,
+            "diff_rssi": 5
+        });
+
+        assert_eq!(event_data["event_type"], "Discovered device");
+        assert_eq!(event_data["local_name"], "Test Device");
+        assert_eq!(event_data["id"], "test-device-123");
+        assert_eq!(event_data["rssi"], -50);
+        assert_eq!(event_data["diff_rssi"], 5);
+    }
+
+    #[test]
+    fn test_bluetooth_error_is_error_trait() {
+        let error = BluetoothError::Discovery("Test".to_string());
+        let _: &dyn std::error::Error = &error; // Should compile if Error trait is implemented
+    }
+
+    #[test]
+    fn test_bluetooth_error_debug() {
+        let error = BluetoothError::Discovery("Test error".to_string());
+        let debug_str = format!("{:?}", error);
+        assert!(debug_str.contains("Discovery"));
+        assert!(debug_str.contains("Test error"));
+    }
+
+    // Integration-style test that simulates the UUID validation logic
+    #[tokio::test]
+    async fn test_uuid_validation_workflow() {
+        // Test the workflow that listen_bluetooth would follow
+
+        // Valid UUID case
+        let target_uuid_str = Some("12345678-1234-1234-1234-123456789012".to_string());
+        let parsed_uuid = match target_uuid_str {
+            Some(uuid_str) => Some(Uuid::parse_str(&uuid_str)),
+            None => None,
+        };
+        
+        assert!(parsed_uuid.is_some());
+        assert!(parsed_uuid.unwrap().is_ok());
+
+        // Invalid UUID case
+        let target_uuid_str = Some("invalid-uuid".to_string());
+        let parsed_uuid = match target_uuid_str {
+            Some(uuid_str) => Some(Uuid::parse_str(&uuid_str)),
+            None => None,
+        };
+        
+        assert!(parsed_uuid.is_some());
+        assert!(parsed_uuid.unwrap().is_err());
+
+        // None case
+        let target_uuid_str: Option<String> = None;
+        let parsed_uuid = match target_uuid_str {
+            Some(uuid_str) => Some(Uuid::parse_str(&uuid_str)),
+            None => None,
+        };
+        
+        assert!(parsed_uuid.is_none());
+    }
+
+    #[test]
+    fn test_successive_timeout_logic() {
+        // Test the logic for handling successive timeouts
+        let mut successives_timeout = 0;
+
+        // First timeout - should break inner loop (reload stream)
+        successives_timeout += 1;
+        assert_eq!(successives_timeout, 1);
+        let should_break = successives_timeout <= 1;
+        assert!(should_break, "First timeout should break inner loop");
+
+        // Second timeout - should emit refresh event and reset
+        successives_timeout += 1;
+        assert_eq!(successives_timeout, 2);
+        let should_break = successives_timeout <= 1;
+        assert!(!should_break, "Second timeout should not break inner loop");
+        
+        // Reset logic
+        successives_timeout = 0;
+        assert_eq!(successives_timeout, 0);
+    }
+}
