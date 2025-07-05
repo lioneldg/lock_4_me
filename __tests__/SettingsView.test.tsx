@@ -42,6 +42,7 @@ jest.mock('react-router', () => ({
 }));
 
 // Mock translations
+const mockChangeLanguage = jest.fn();
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -54,7 +55,7 @@ jest.mock('react-i18next', () => ({
       return translations[key] || key;
     },
     i18n: {
-      changeLanguage: jest.fn()
+      changeLanguage: mockChangeLanguage
     }
   })
 }));
@@ -107,6 +108,7 @@ jest.mock('../src/components/Slider', () => ({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         data-testid="slider-input"
+        readOnly={false}
       />
       <span>{value} {unit}</span>
     </div>
@@ -148,6 +150,15 @@ const MockSettingsView = () => {
   const { settings } = mockSettingsStore;
   const { isDiscoveryMode } = mockAppStore;
   
+  const handleRSSIChange = (newValue: number) => {
+    mockSettingsStore.setSettings({ rssi_delta_max: newValue });
+  };
+  
+  const handleLanguageChange = (newLang: string) => {
+    mockChangeLanguage(newLang);
+    mockSettingsStore.setSettings({ language: newLang as any });
+  };
+  
   return (
     <div>
       <header>
@@ -176,7 +187,9 @@ const MockSettingsView = () => {
               min={1}
               max={60}
               value={settings.rssi_delta_max}
+              onChange={(e) => handleRSSIChange(Number(e.target.value))}
               data-testid="slider-input"
+              readOnly={false}
             />
             <span>{settings.rssi_delta_max} dBm</span>
           </div>
@@ -188,10 +201,7 @@ const MockSettingsView = () => {
             <select 
               value={settings.language} 
               data-testid="dropdown-select"
-              onChange={(e) => {
-                const newLang = e.target.value;
-                mockSettingsStore.setSettings({ language: newLang as any });
-              }}
+              onChange={(e) => handleLanguageChange(e.target.value)}
             >
               <option value="en">English</option>
               <option value="fr">Français</option>
@@ -311,31 +321,10 @@ describe('SettingsView Integration Tests', () => {
     const slider = screen.getByTestId('slider-input');
     fireEvent.change(slider, { target: { value: '30' } });
 
-    // The component uses debounce, so we need to check the local state change
-    expect(slider).toHaveValue('30');
+    expect(mockSettingsStore.setSettings).toHaveBeenCalledWith({ rssi_delta_max: 30 });
   });
 
   it('should handle language dropdown changes', () => {
-    const mockChangeLanguage = jest.fn();
-    
-    // Update the mock for this specific test
-    jest.doMock('react-i18next', () => ({
-      useTranslation: () => ({
-        t: (key: string) => {
-          const translations: { [key: string]: string } = {
-            'settings.title': 'Settings',
-            'settings.language': 'Language',
-            'settings.select_bluetooth': 'Select Bluetooth Device',
-            'settings.rssi_sensitivity': 'RSSI Sensitivity'
-          };
-          return translations[key] || key;
-        },
-        i18n: {
-          changeLanguage: mockChangeLanguage
-        }
-      })
-    }));
-
     render(
       <MockRouter>
         <MockSettingsView />
