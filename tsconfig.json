@@ -20,6 +20,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "__tests__"],
+  "types": ["jest", "@testing-library/jest-dom"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
